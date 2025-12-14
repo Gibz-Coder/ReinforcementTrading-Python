@@ -1,0 +1,388 @@
+{
+  "wheels": [
+    {
+      "name": "absl_py-2.3.1-py3-none-any.whl",
+      "size_mb": 0.12951946258544922
+    },
+    {
+      "name": "alembic-1.17.2-py3-none-any.whl",
+      "size_mb": 0.23703956604003906
+    },
+    {
+      "name": "altgraph-0.17.5-py2.py3-none-any.whl",
+      "size_mb": 0.020244598388671875
+    },
+    {
+      "name": "brotli-1.2.0-cp313-cp313-win_amd64.whl",
+      "size_mb": 0.3520164489746094
+    },
+    {
+      "name": "certifi-2025.11.12-py3-none-any.whl",
+      "size_mb": 0.1520519256591797
+    },
+    {
+      "name": "charset_normalizer-3.4.4-cp313-cp313-win_amd64.whl",
+      "size_mb": 0.10213088989257812
+    },
+    {
+      "name": "cloudpickle-3.1.2-py3-none-any.whl",
+      "size_mb": 0.021198272705078125
+    },
+    {
+      "name": "colorama-0.4.6-py2.py3-none-any.whl",
+      "size_mb": 0.024161338806152344
+    },
+    {
+      "name": "colorlog-6.10.1-py3-none-any.whl",
+      "size_mb": 0.011198997497558594
+    },
+    {
+      "name": "contourpy-1.3.3-cp313-cp313-win_amd64.whl",
+      "size_mb": 0.2160816192626953
+    },
+    {
+      "name": "cycler-0.12.1-py3-none-any.whl",
+      "size_mb": 0.007935523986816406
+    },
+    {
+      "name": "Farama_Notifications-0.0.4-py3-none-any.whl",
+      "size_mb": 0.0023946762084960938
+    },
+    {
+      "name": "filelock-3.20.0-py3-none-any.whl",
+      "size_mb": 0.015310287475585938
+    },
+    {
+      "name": "fonttools-4.61.1-cp313-cp313-win_amd64.whl",
+      "size_mb": 2.21077823638916
+    },
+    {
+      "name": "fsspec-2025.12.0-py3-none-any.whl",
+      "size_mb": 0.1920909881591797
+    },
+    {
+      "name": "greenlet-3.3.0-cp313-cp313-win_amd64.whl",
+      "size_mb": 0.28785037994384766
+    },
+    {
+      "name": "grpcio-1.76.0-cp313-cp313-win_amd64.whl",
+      "size_mb": 4.484938621520996
+    },
+    {
+      "name": "gymnasium-1.2.2-py3-none-any.whl",
+      "size_mb": 0.9080104827880859
+    },
+    {
+      "name": "idna-3.11-py3-none-any.whl",
+      "size_mb": 0.067718505859375
+    },
+    {
+      "name": "jinja2-3.1.6-py3-none-any.whl",
+      "size_mb": 0.12864971160888672
+    },
+    {
+      "name": "joblib-1.5.2-py3-none-any.whl",
+      "size_mb": 0.2941093444824219
+    },
+    {
+      "name": "kiwisolver-1.4.9-cp313-cp313-win_amd64.whl",
+      "size_mb": 0.07047080993652344
+    },
+    {
+      "name": "llvmlite-0.44.0-cp313-cp313-win_amd64.whl",
+      "size_mb": 28.926079750061035
+    },
+    {
+      "name": "mako-1.3.10-py3-none-any.whl",
+      "size_mb": 0.07487201690673828
+    },
+    {
+      "name": "markdown-3.10-py3-none-any.whl",
+      "size_mb": 0.10268974304199219
+    },
+    {
+      "name": "markupsafe-3.0.3-cp313-cp313-win_amd64.whl",
+      "size_mb": 0.014412879943847656
+    },
+    {
+      "name": "matplotlib-3.10.8-cp313-cp313-win_amd64.whl",
+      "size_mb": 7.765470504760742
+    },
+    {
+      "name": "mpmath-1.3.0-py3-none-any.whl",
+      "size_mb": 0.5113582611083984
+    },
+    {
+      "name": "mutagen-1.47.0-py3-none-any.whl",
+      "size_mb": 0.18538570404052734
+    },
+    {
+      "name": "networkx-3.6.1-py3-none-any.whl",
+      "size_mb": 1.9726791381835938
+    },
+    {
+      "name": "numba-0.61.2-cp313-cp313-win_amd64.whl",
+      "size_mb": 2.7006587982177734
+    },
+    {
+      "name": "numpy-2.2.6-cp313-cp313-win_amd64.whl",
+      "size_mb": 12.026677131652832
+    },
+    {
+      "name": "numpy-2.3.5-cp313-cp313-win_amd64.whl",
+      "size_mb": 12.187089920043945
+    },
+    {
+      "name": "optuna-4.6.0-py3-none-any.whl",
+      "size_mb": 0.3859596252441406
+    },
+    {
+      "name": "packaging-25.0-py3-none-any.whl",
+      "size_mb": 0.06338977813720703
+    },
+    {
+      "name": "pandas-2.3.3-cp313-cp313-win_amd64.whl",
+      "size_mb": 10.484686851501465
+    },
+    {
+      "name": "pandas_ta-0.4.71b0-py3-none-any.whl",
+      "size_mb": 0.22913455963134766
+    },
+    {
+      "name": "patsy-1.0.2-py2.py3-none-any.whl",
+      "size_mb": 0.22249317169189453
+    },
+    {
+      "name": "pefile-2024.8.26-py3-none-any.whl",
+      "size_mb": 0.07130241394042969
+    },
+    {
+      "name": "pillow-12.0.0-cp313-cp313-win_amd64.whl",
+      "size_mb": 6.6828508377075195
+    },
+    {
+      "name": "pip-25.3-py3-none-any.whl",
+      "size_mb": 1.6962261199951172
+    },
+    {
+      "name": "protobuf-6.33.2-cp310-abi3-win_amd64.whl",
+      "size_mb": 0.4166889190673828
+    },
+    {
+      "name": "psutil-7.1.3-cp37-abi3-win_amd64.whl",
+      "size_mb": 0.2361612319946289
+    },
+    {
+      "name": "pycryptodomex-3.23.0-cp37-abi3-win_amd64.whl",
+      "size_mb": 1.7195930480957031
+    },
+    {
+      "name": "pyinstaller-6.17.0-py3-none-win_amd64.whl",
+      "size_mb": 1.3148164749145508
+    },
+    {
+      "name": "pyinstaller_hooks_contrib-2025.10-py3-none-any.whl",
+      "size_mb": 0.4270172119140625
+    },
+    {
+      "name": "pyparsing-3.2.5-py3-none-any.whl",
+      "size_mb": 0.10861396789550781
+    },
+    {
+      "name": "python_dateutil-2.9.0.post0-py2.py3-none-any.whl",
+      "size_mb": 0.21924209594726562
+    },
+    {
+      "name": "pytz-2025.2-py2.py3-none-any.whl",
+      "size_mb": 0.48563480377197266
+    },
+    {
+      "name": "pywin32_ctypes-0.2.3-py3-none-any.whl",
+      "size_mb": 0.029331207275390625
+    },
+    {
+      "name": "pyyaml-6.0.3-cp313-cp313-win_amd64.whl",
+      "size_mb": 0.14695167541503906
+    },
+    {
+      "name": "requests-2.32.5-py3-none-any.whl",
+      "size_mb": 0.06173896789550781
+    },
+    {
+      "name": "scikit_learn-1.8.0-cp313-cp313-win_amd64.whl",
+      "size_mb": 7.619294166564941
+    },
+    {
+      "name": "scipy-1.16.3-cp313-cp313-win_amd64.whl",
+      "size_mb": 36.744954109191895
+    },
+    {
+      "name": "seaborn-0.13.2-py3-none-any.whl",
+      "size_mb": 0.2812519073486328
+    },
+    {
+      "name": "setuptools-80.9.0-py3-none-any.whl",
+      "size_mb": 1.1458263397216797
+    },
+    {
+      "name": "six-1.17.0-py2.py3-none-any.whl",
+      "size_mb": 0.010538101196289062
+    },
+    {
+      "name": "sqlalchemy-2.0.45-cp313-cp313-win_amd64.whl",
+      "size_mb": 2.0373001098632812
+    },
+    {
+      "name": "stable_baselines3-2.7.1-py3-none-any.whl",
+      "size_mb": 0.17932796478271484
+    },
+    {
+      "name": "statsmodels-0.14.6-cp313-cp313-win_amd64.whl",
+      "size_mb": 9.09809398651123
+    },
+    {
+      "name": "sympy-1.14.0-py3-none-any.whl",
+      "size_mb": 6.00753116607666
+    },
+    {
+      "name": "tensorboard-2.20.0-py3-none-any.whl",
+      "size_mb": 5.2696990966796875
+    },
+    {
+      "name": "tensorboard_data_server-0.7.2-py3-none-any.whl",
+      "size_mb": 0.002246856689453125
+    },
+    {
+      "name": "threadpoolctl-3.6.0-py3-none-any.whl",
+      "size_mb": 0.017774581909179688
+    },
+    {
+      "name": "torch-2.9.1-cp313-cp313-win_amd64.whl",
+      "size_mb": 105.80459785461426
+    },
+    {
+      "name": "tqdm-4.67.1-py3-none-any.whl",
+      "size_mb": 0.07490158081054688
+    },
+    {
+      "name": "typing_extensions-4.15.0-py3-none-any.whl",
+      "size_mb": 0.04254722595214844
+    },
+    {
+      "name": "tzdata-2025.3-py2.py3-none-any.whl",
+      "size_mb": 0.33237552642822266
+    },
+    {
+      "name": "urllib3-2.6.2-py3-none-any.whl",
+      "size_mb": 0.1251049041748047
+    },
+    {
+      "name": "websockets-15.0.1-cp313-cp313-win_amd64.whl",
+      "size_mb": 0.16864490509033203
+    },
+    {
+      "name": "werkzeug-3.1.4-py3-none-any.whl",
+      "size_mb": 0.21453857421875
+    },
+    {
+      "name": "wheel-0.45.1-py3-none-any.whl",
+      "size_mb": 0.06913566589355469
+    },
+    {
+      "name": "yt_dlp-2025.12.8-py3-none-any.whl",
+      "size_mb": 3.1389846801757812
+    }
+  ],
+  "torch_packages": [
+    {
+      "name": "filelock-3.19.1-py3-none-any.whl",
+      "size_mb": 0.015247344970703125
+    },
+    {
+      "name": "filelock-3.20.0-py3-none-any.whl",
+      "size_mb": 0.015310287475585938
+    },
+    {
+      "name": "fsspec-2025.12.0-py3-none-any.whl",
+      "size_mb": 0.1920909881591797
+    },
+    {
+      "name": "fsspec-2025.9.0-py3-none-any.whl",
+      "size_mb": 0.19005680084228516
+    },
+    {
+      "name": "jinja2-3.1.6-py3-none-any.whl",
+      "size_mb": 0.12864971160888672
+    },
+    {
+      "name": "MarkupSafe-2.1.5.tar.gz",
+      "size_mb": 0.01848602294921875
+    },
+    {
+      "name": "mpmath-1.3.0-py3-none-any.whl",
+      "size_mb": 0.5113582611083984
+    },
+    {
+      "name": "networkx-3.5-py3-none-any.whl",
+      "size_mb": 1.9401607513427734
+    },
+    {
+      "name": "networkx-3.6.1-py3-none-any.whl",
+      "size_mb": 1.9726791381835938
+    },
+    {
+      "name": "numpy-2.3.3-cp313-cp313-win_amd64.whl",
+      "size_mb": 12.191075325012207
+    },
+    {
+      "name": "numpy-2.3.5-cp313-cp313-win_amd64.whl",
+      "size_mb": 12.187089920043945
+    },
+    {
+      "name": "pillow-11.3.0-cp313-cp313-win_amd64.whl",
+      "size_mb": 6.655168533325195
+    },
+    {
+      "name": "pillow-12.0.0-cp313-cp313-win_amd64.whl",
+      "size_mb": 6.6828508377075195
+    },
+    {
+      "name": "setuptools-70.2.0-py3-none-any.whl",
+      "size_mb": 0.8877124786376953
+    },
+    {
+      "name": "sympy-1.14.0-py3-none-any.whl",
+      "size_mb": 6.00753116607666
+    },
+    {
+      "name": "torch-2.7.1+cu118-cp313-cp313-win_amd64.whl",
+      "size_mb": 2686.668013572693
+    },
+    {
+      "name": "torch-2.9.1+cpu-cp313-cp313-win_amd64.whl",
+      "size_mb": 105.7243070602417
+    },
+    {
+      "name": "torchaudio-2.7.1+cu118-cp313-cp313-win_amd64.whl",
+      "size_mb": 3.900697708129883
+    },
+    {
+      "name": "torchaudio-2.9.1+cpu-cp313-cp313-win_amd64.whl",
+      "size_mb": 0.6323337554931641
+    },
+    {
+      "name": "torchvision-0.22.1+cu118-cp313-cp313-win_amd64.whl",
+      "size_mb": 5.2377424240112305
+    },
+    {
+      "name": "torchvision-0.24.1+cpu-cp313-cp313-win_amd64.whl",
+      "size_mb": 4.119803428649902
+    },
+    {
+      "name": "typing_extensions-4.15.0-py3-none-any.whl",
+      "size_mb": 0.04254722595214844
+    }
+  ],
+  "total_files": 95,
+  "total_size_mb": 3135.7106895446777
+}

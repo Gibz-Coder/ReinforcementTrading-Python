@@ -1,0 +1,81 @@
+# Training Configuration for Forex RL System
+# ==========================================
+
+# Model Configuration
+model:
+  algorithm: "PPO"
+  policy: "MlpPolicy"
+  
+  # Learning Parameters
+  learning_rate: 0.0002
+  n_steps: 4096
+  batch_size: 128
+  n_epochs: 15
+  
+  # Policy Parameters
+  gamma: 0.995
+  gae_lambda: 0.98
+  clip_range: 0.15
+  clip_range_vf: 0.15
+  ent_coef: 0.05
+  vf_coef: 0.5
+  
+  # Network Architecture
+  policy_kwargs:
+    net_arch:
+      pi: [512, 512, 256, 128]
+      vf: [512, 512, 256, 128]
+    activation_fn: "relu"
+    ortho_init: false
+    log_std_init: -2.0
+
+# Environment Configuration
+environment:
+  window_size: 30
+  initial_balance: 10000.0
+  max_trades_per_day: 5
+  spread_pips: 1.5
+  slippage_pips: 0.5
+
+# Training Configuration
+training:
+  total_timesteps: 1000000
+  save_freq: 50000
+  eval_freq: 25000
+  n_envs: 1
+  
+  # Advanced Features
+  use_curriculum: true
+  use_walk_forward: false
+  use_lstm: false
+
+# Ultra-Aggressive Configuration
+ultra_aggressive:
+  max_trades_per_day: 2
+  min_confidence: 0.85
+  min_regime_strength: 1.5
+  max_volatility: 0.5
+  required_confirmations: 4
+  
+  # Reward System
+  reward_system:
+    win_bonus: 20.0
+    loss_penalty: -25.0
+    confidence_multiplier: 3.0
+    regime_alignment_bonus: 5.0
+    overtrading_penalty: -10.0
+    drawdown_penalty_threshold: 0.10
+
+# Data Configuration
+data:
+  normalize: true
+  train_split: 0.8
+  validation_split: 0.1
+  test_split: 0.1
+
+# Logging Configuration
+logging:
+  tensorboard: true
+  log_level: "INFO"
+  save_trade_history: true
+  save_equity_curve: true

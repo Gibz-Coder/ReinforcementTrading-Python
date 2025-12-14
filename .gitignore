@@ -15,12 +15,12 @@ lib64/
 parts/
 sdist/
 var/
-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
 
 # Virtual environments
+forex_env/
 venv/
 ENV/
 env/
@@ -36,14 +36,22 @@ env/
 # Jupyter Notebook
 .ipynb_checkpoints/
 
-# Model files (large binary files)
-models/
+# Large Dependencies (3+ GB offline installation packages)
+dependencies/wheels/
+dependencies/torch/
+dependencies/*.whl
+dependencies/*.tar.gz
+
+# Large Model files (keep structure, exclude large binaries)
+models/production/*.zip
+models/experimental/*.zip
 checkpoints/
 *.zip
 
-# Logs and results
-logs/
-results/
+# Logs and results (keep structure, exclude large log files)
+logs/*/
+results/analysis/
+results/reports/
 *.log
 
 # Database files
@@ -61,8 +69,11 @@ Thumbs.db
 .env
 .env.local
 
-# Data files (optional - uncomment if you want to exclude data)
-# data/
+# Large data files (keep sample data, exclude full datasets)
+data/raw/*.csv
+data/processed/*.csv
+data/raw/*.parquet
+data/processed/*.parquet
 
 # Temporary files
 *.tmp
@@ -74,4 +85,20 @@ optuna_*.db
 
 # Best hyperparameters (generated file)
 best_hyperparams.json
+
+# Keep important dependency files but exclude large packages
+!dependencies/install_offline.bat
+!dependencies/install_complete_offline.bat
+!dependencies/requirements_offline.txt
+!dependencies/requirements_complete.txt
+!dependencies/package_inventory.json
+
+# Keep essential model and data structure
+!models/production/.gitkeep
+!models/experimental/.gitkeep
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!logs/README.md
+!results/analysis/.gitkeep
+!results/reports/.gitkeep
 
