@@ -415,21 +415,16 @@ def train_enhanced_agent(
             create_enhanced_env(test_df, window_size)
         ])
         
-        # Model configuration
-        if use_lstm:
-            policy_kwargs = dict(
-                lstm_hidden_size=128,
-                lstm_num_layers=2
-            )
-            policy = LSTMPolicy
-        else:
-            policy_kwargs = dict(
-                net_arch=dict(
-                    pi=[256, 256, 128],
-                    vf=[256, 256, 128]
-                )
-            )
-            policy = "MlpPolicy"
+        # Model configuration - using enhanced MLP for now
+        # TODO: Fix LSTM policy compatibility in future version
+        policy_kwargs = dict(
+            net_arch=dict(
+                pi=[512, 256, 128],  # Enhanced architecture
+                vf=[512, 256, 128]
+            ),
+            activation_fn=torch.nn.ReLU
+        )
+        policy = "MlpPolicy"
         
         # Create model
         model = PPO(
@@ -591,25 +586,25 @@ def train_enhanced_agent(
 
 
 def main():
-    """Main training function with enhanced configuration."""
+    """Main training function with enhanced configuration for improved winrate."""
     
     results = train_enhanced_agent(
         data_path="data/EURUSD_Candlestick_1_Hour_BID_01.07.2020-15.07.2023.csv",
-        total_timesteps=500000,
+        total_timesteps=1000000,  # Increased for better convergence
         window_size=30,
         use_lstm=True,
         use_curriculum=True,
         use_walk_forward=False,  # Set to True for robust validation
-        learning_rate=3e-4,
-        n_steps=2048,
-        batch_size=64,
-        n_epochs=10,
-        gamma=0.99,
-        ent_coef=0.1,
-        save_freq=25000,
-        eval_freq=10000,
+        learning_rate=2e-4,      # Reduced for more stable learning
+        n_steps=4096,            # Increased for larger batches
+        batch_size=128,          # Increased for more stable updates
+        n_epochs=15,             # More epochs for better learning
+        gamma=0.995,             # Increased for longer-term thinking
+        ent_coef=0.05,           # Reduced for more focused actions
+        save_freq=50000,         # Less frequent saves
+        eval_freq=25000,         # Less frequent evaluation
         n_envs=1,
-        model_name="enhanced_ppo_forex_v2"
+        model_name="enhanced_ppo_forex_v3_winrate"
     )
 
 
