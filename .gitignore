@@ -1,0 +1,77 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Model files (large binary files)
+models/
+checkpoints/
+*.zip
+
+# Logs and results
+logs/
+results/
+*.log
+
+# Database files
+*.db
+*.sqlite3
+
+# TensorBoard
+runs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+
+# Data files (optional - uncomment if you want to exclude data)
+# data/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+
+# Optuna database
+optuna_*.db
+
+# Best hyperparameters (generated file)
+best_hyperparams.json
+
