@@ -1,7 +1,7 @@
 {
-  "input_size": 780,
+  "input_size": 360,
   "window_size": 20,
-  "num_features": 39,
+  "num_features": 18,
   "num_actions": 3,
   "action_mapping": {
     "0": "HOLD",
