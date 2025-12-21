@@ -1,241 +1,100 @@
-# 🚀 Forex RL Trading System
+# High Win Rate Forex Trading with Reinforcement Learning
 
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Stable Baselines3](https://img.shields.io/badge/SB3-2.0+-green.svg)](https://stable-baselines3.readthedocs.io/)
+AI-powered trading system using PPO (Proximal Policy Optimization) achieving **80.5% win rate** on XAUUSD M15.
 
-A comprehensive **Reinforcement Learning trading system** for forex markets using **PPO (Proximal Policy Optimization)** with advanced technical indicators, risk management, and ultra-high win-rate optimization.
+## Results
 
-## 🎯 Key Features
+| Metric | Value |
+|--------|-------|
+| Win Rate | 80.5% |
+| Total Trades | 2,754 |
+| Timeframe | M15 |
+| Symbol | XAUUSD |
+| TP/SL Ratio | 1:4 |
 
-- **🧠 Advanced RL Models**: PPO with LSTM support and ensemble learning
-- **📊 80+ Technical Indicators**: Multi-timeframe analysis with regime detection
-- **🎯 Ultra-High Win Rate**: Specialized system targeting 80%+ win rates
-- **⚡ Risk Management**: Dynamic position sizing with Kelly Criterion
-- **🔄 Offline Installation**: Complete dependency management for air-gapped systems
-- **📈 Real-time Monitoring**: Comprehensive performance tracking and TensorBoard integration
+## Strategy
 
-## 🏗️ Project Structure
+The model uses a **small TP / large SL** approach:
+- Take Profit: 0.5 × ATR
+- Stop Loss: 2.0 × ATR
+
+This asymmetric risk/reward achieves high win rate by:
+- Taking quick profits on small moves
+- Allowing trades room to recover before stopping out
+
+## Project Structure
 
 ```
-forex-rl-trading/
-├── 📁 src/                     # Source code modules
-│   ├── environments/           # Trading environments
-│   ├── indicators/             # Technical indicators & market analysis
-│   ├── training/               # Training systems & algorithms
-│   ├── rewards/                # Reward systems & optimization
-│   ├── risk/                   # Risk management & position sizing
-│   ├── testing/                # Testing & performance evaluation
-│   └── utils/                  # Utility functions
-├── 📁 dependencies/            # Offline installation packages
-│   ├── wheels/                 # Python wheel files
-│   └── torch/                  # PyTorch offline installers
-├── 📁 data/                    # Market data
-│   ├── raw/                    # Original CSV files
-│   └── processed/              # Preprocessed datasets
-├── 📁 models/                  # Trained models
-│   ├── production/             # Production-ready models
-│   └── experimental/           # Development models
-├── 📁 results/                 # Performance results & analysis
-├── 📁 scripts/                 # Utility scripts
-├── 📁 config/                  # Configuration files
-├── 📁 docs/                    # Documentation
-└── 📁 logs/                    # Training logs & TensorBoard
+├── models/production/          # Trained models
+│   └── highwr_v7_81pct_*.zip  # Best model (80.5% WR)
+├── mt5_ea/                     # MetaTrader 5 Expert Advisor
+│   └── HighWinRateEA_v2.mq5   # EA source code
+├── mt5_export/                 # ONNX export for MT5
+│   └── trading_model.onnx     # Exported model
+├── scripts/
+│   ├── train_highwr_v7.py     # Training script
+│   └── export_to_onnx_mt5.py  # ONNX export script
+├── src/                        # Core modules
+│   ├── environments/          # Trading environment
+│   ├── indicators/            # Technical indicators
+│   └── ...
+└── deploy_to_mt5.bat          # MT5 deployment script
 ```
 
-## ⚡ Quick Start
+## Quick Start
 
-### 🔧 Installation
-
+### 1. Setup Environment
 ```bash
-# Automated setup (Windows)
-setup.bat
-
-# Manual setup
 python -m venv forex_env
-forex_env\Scripts\activate.bat
+forex_env\Scripts\activate
 pip install -r requirements.txt
-
-# Verify installation
-python scripts/verify_installation.py
 ```
 
-### 🚀 Training Models
-
-**Ultra-High Win Rate System (Recommended)**
+### 2. Train Model
 ```bash
-python scripts/train_ultra_aggressive.py
-# Targets: 80%+ win rate, ultra-conservative entries
+python scripts/train_highwr_v7.py --timesteps 1000000
 ```
 
-**Standard Enhanced System**
+### 3. Export to ONNX
 ```bash
-python scripts/train_enhanced.py  
-# Targets: 65-75% win rate, balanced approach
+python scripts/export_to_onnx_mt5.py --model models/production/highwr_v7_81pct_20251221_104308.zip
 ```
 
-**Custom Training**
-```bash
-python scripts/train_model.py --config config/custom_config.yaml
-```
+### 4. Deploy to MT5
+1. Edit `deploy_to_mt5.bat` with your MT5 data path
+2. Run `deploy_to_mt5.bat`
+3. Open MetaEditor (F4) and compile (F7)
+4. Attach EA to XAUUSD M15 chart
 
-### 📊 Testing & Evaluation
+## MT5 Installation
 
-```bash
-# Test trained model
-python scripts/test_model.py --model models/production/best_model.zip
+See [mt5_ea/README.md](mt5_ea/README.md) for detailed MT5 installation instructions.
 
-# Generate performance report
-python scripts/generate_report.py --model models/production/best_model.zip
-```
+## Features Used
 
-## 🎯 Training Systems
+- OHLC prices (normalized)
+- ATR (14)
+- RSI (14)
+- MACD (12, 26, 9)
+- MA20
+- Stochastic (14, 3, 3)
 
-### 🔥 Ultra-Aggressive Win Rate System
-- **Target**: 80%+ win rate
-- **Strategy**: Ultra-strict entry criteria with 4+ confirmations
-- **Risk**: Very conservative, max 2 trades/day
-- **Best for**: Consistent profits with minimal drawdowns
+## Requirements
 
-### ⚖️ Enhanced Standard System  
-- **Target**: 65-75% win rate
-- **Strategy**: Balanced risk/reward with multi-timeframe analysis
-- **Risk**: Moderate, up to 5 trades/day
-- **Best for**: Higher returns with acceptable risk
+- Python 3.10+
+- PyTorch 2.0+
+- Stable-Baselines3
+- MetaTrader 5 (for live trading)
 
-### 🧪 Experimental Systems
-- **Ensemble Learning**: Multiple model voting
-- **Walk-Forward Analysis**: Robust validation
-- **Curriculum Learning**: Progressive difficulty training
+## Risk Warning
 
-## 📈 Performance Metrics
+⚠️ **Trading involves substantial risk of loss.**
 
-| System | Win Rate | Avg Return | Max Drawdown | Sharpe Ratio | Trade Frequency |
-|--------|----------|------------|--------------|--------------|-----------------|
-| **Ultra-Aggressive** | 80-85% | 15-25%/year | <5% | 2.5+ | 2-5/week |
-| **Enhanced Standard** | 65-75% | 20-35%/year | <10% | 2.0+ | 5-15/week |
-| **Baseline PPO** | 55-65% | 10-20%/year | <15% | 1.5+ | 10-25/week |
+- Past performance does not guarantee future results
+- Always test on demo account first
+- The 1:4 TP/SL ratio means individual losses are larger than wins
+- Use proper position sizing and risk management
 
-## 🛠️ Advanced Features
+## License
 
-### 📊 Technical Analysis
-- **Multi-timeframe**: 1H, 4H, Daily analysis
-- **80+ Indicators**: RSI, MACD, Bollinger, ATR, Stochastic SuperTrend
-- **Market Regimes**: Trending vs ranging detection
-- **Session Analysis**: London, NY, Tokyo session optimization
-
-### 🎯 Risk Management
-- **Dynamic Position Sizing**: Kelly Criterion optimization
-- **Adaptive Stop Loss**: ATR-based dynamic stops
-- **Drawdown Protection**: Progressive risk reduction
-- **Correlation Analysis**: Multi-asset risk assessment
-
-### 🧠 Machine Learning
-- **PPO with LSTM**: Sequential pattern recognition
-- **Ensemble Methods**: Multiple model consensus
-- **Hyperparameter Optimization**: Optuna integration
-- **Curriculum Learning**: Progressive difficulty training
-
-## 📋 Configuration
-
-### Training Configuration (`config/training_config.yaml`)
-```yaml
-model:
-  algorithm: "PPO"
-  learning_rate: 0.0002
-  batch_size: 128
-  n_steps: 4096
-  
-environment:
-  window_size: 30
-  max_trades_per_day: 2
-  spread_pips: 1.5
-  
-reward_system:
-  win_bonus: 20.0
-  loss_penalty: -25.0
-  confidence_threshold: 0.85
-```
-
-## 📊 Monitoring & Analysis
-
-### TensorBoard Integration
-```bash
-tensorboard --logdir logs/
-```
-
-### Performance Reports
-```bash
-# Generate comprehensive report
-python scripts/generate_report.py --model models/production/best_model.zip --output results/reports/
-
-# Real-time monitoring
-python scripts/monitor_performance.py --model models/production/best_model.zip
-```
-
-## 🔧 Offline Installation System
-
-### Dependencies Included
-- **Python Packages**: All wheels for air-gapped installation
-- **PyTorch**: CPU and GPU versions
-- **CUDA Support**: Optional GPU acceleration
-- **Complete Environment**: No internet required after setup
-
-### Offline Setup
-```bash
-# Windows
-dependencies/install_offline.bat
-
-# Linux/Mac  
-chmod +x dependencies/install_offline.sh
-./dependencies/install_offline.sh
-```
-
-## 📚 Documentation
-
-- **[Installation Guide](docs/installation.md)**: Detailed setup instructions
-- **[Usage Examples](docs/usage.md)**: Code examples and tutorials
-- **[API Reference](docs/api.md)**: Complete API documentation
-- **[Troubleshooting](docs/troubleshooting.md)**: Common issues and solutions
-
-## 🚨 Important Notes
-
-### Data Requirements
-- **Format**: CSV with columns: `Gmt time, Open, High, Low, Close, Volume`
-- **Timeframe**: Hourly data recommended (1H)
-- **History**: Minimum 2 years for robust training
-- **Quality**: Clean data without gaps or errors
-
-### Hardware Requirements
-- **CPU**: 4+ cores recommended
-- **RAM**: 8GB minimum, 16GB recommended
-- **GPU**: Optional but recommended for faster training
-- **Storage**: 5GB for full installation
-
-### Risk Disclaimer
-⚠️ **This software is for educational and research purposes only. Trading involves substantial risk of loss. Past performance does not guarantee future results. Always test thoroughly before live trading.**
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- **Stable Baselines3** for RL algorithms
-- **pandas-ta** for technical indicators
-- **Gymnasium** for environment framework
-- **PyTorch** for deep learning backend
-
----
-
-**⭐ Star this repository if you find it helpful!**
-
-For questions and support, please open an issue or contact the development team.
+For personal use only. Not financial advice.

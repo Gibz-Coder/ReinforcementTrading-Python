@@ -43,13 +43,15 @@ dependencies/*.whl
 dependencies/*.tar.gz
 
 # Large Model files (keep structure, exclude large binaries)
-models/production/*.zip
 models/experimental/*.zip
 checkpoints/
-*.zip
+
+# Keep production model
+!models/production/highwr_v7_81pct_20251221_104308.zip
 
 # Logs and results (keep structure, exclude large log files)
 logs/*/
+!logs/highwr_v7_training/
 results/analysis/
 results/reports/
 *.log
@@ -102,3 +104,13 @@ best_hyperparams.json
 !results/analysis/.gitkeep
 !results/reports/.gitkeep
 
+
+# VPS package (generated)
+vps_package/
+
+# ONNX data files
+*.onnx.data
+
+# Keep MT5 export
+!mt5_export/trading_model.onnx
+!mt5_export/model_config.json

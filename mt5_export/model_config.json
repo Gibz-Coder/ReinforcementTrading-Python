@@ -1,0 +1,11 @@
+{
+  "input_size": 780,
+  "window_size": 20,
+  "num_features": 39,
+  "num_actions": 3,
+  "action_mapping": {
+    "0": "HOLD",
+    "1": "BUY",
+    "2": "SELL"
+  }
+}
