@@ -1,8 +1,21 @@
 # High Win Rate Forex Trading with Reinforcement Learning
 
-AI-powered trading system using PPO (Proximal Policy Optimization) achieving **80.5% win rate** on XAUUSD M15.
+AI-powered trading system using PPO (Proximal Policy Optimization) for XAUUSD M15 trading.
 
-## Results
+## Current Training Status (Dec 22, 2025)
+
+🔄 **Balanced RR v2 Training In Progress** - 23% complete (344K/1.5M timesteps)
+
+| Metric | Train | Validation |
+|--------|-------|------------|
+| Win Rate | 51.2% | 47.7% |
+| Profit Factor | - | 0.91 |
+| Trades | ~65/episode | - |
+| No Improvement | - | 17 epochs |
+
+Training is exploring but hasn't found improvement yet. Model is learning trade execution but validation metrics need work.
+
+## Previous Best Results (High WR v7)
 
 | Metric | Value |
 |--------|-------|
