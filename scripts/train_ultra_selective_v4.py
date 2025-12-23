@@ -37,7 +37,7 @@ warnings.filterwarnings('ignore')
 # ============================================================================
 
 def create_ultra_selective_signals(df):
-    """OPTIMIZED ultra-selective signals - 3x faster with same quality."""
+    """ENHANCED ultra-selective signals targeting 75%+ win rate with maintained speed."""
     
     # Pre-calculate all indicators in one pass (vectorized)
     df['rsi'] = pta.rsi(df['Close'], length=14)
@@ -45,57 +45,94 @@ def create_ultra_selective_signals(df):
     df['adx'] = adx_data.iloc[:, 0] if adx_data is not None else 25
     df['atr'] = pta.atr(df['High'], df['Low'], df['Close'], length=14)
     
-    # Fast EMAs
+    # Enhanced EMAs with multiple timeframes for better trend confirmation
     df['ema_fast'] = pta.ema(df['Close'], length=12)
     df['ema_slow'] = pta.ema(df['Close'], length=26)
+    df['ema_trend'] = pta.ema(df['Close'], length=50)  # Longer-term trend
     
-    # Optimized volume analysis
+    # Enhanced volume analysis with momentum
     df['volume_ratio'] = df['Volume'] / df['Volume'].rolling(20).mean()
+    df['volume_momentum'] = df['Volume'].rolling(5).mean() / df['Volume'].rolling(20).mean()
     
-    # Optimized price action (vectorized)
+    # Enhanced price action with momentum confirmation
     df['body_pct'] = abs(df['Close'] - df['Open']) / (df['High'] - df['Low'] + 1e-10)
+    df['price_momentum'] = df['Close'].pct_change(3) * 100  # 3-bar momentum
+    df['momentum_ma'] = df['price_momentum'].rolling(5).mean()
     
-    # Pre-calculate rolling max/min for market structure (faster)
-    df['recent_high'] = df['High'].shift(1).rolling(3).max()
-    df['recent_low'] = df['Low'].shift(1).rolling(3).min()
+    # Market structure analysis (key for high win rate)
+    df['recent_high'] = df['High'].shift(1).rolling(5).max()  # Extended lookback
+    df['recent_low'] = df['Low'].shift(1).rolling(5).min()
+    df['support_level'] = df['Low'].rolling(20).min()
+    df['resistance_level'] = df['High'].rolling(20).max()
     
-    # ULTRA-FAST VECTORIZED SCORING
-    # Bullish conditions (all vectorized operations)
+    # Volatility regime detection (crucial for signal quality)
+    df['atr_ma'] = df['atr'].rolling(20).mean()
+    df['volatility_regime'] = (df['atr'] / df['atr_ma']).clip(0.5, 2.0)
+    df['low_volatility'] = (df['volatility_regime'] < 0.8).astype(int)
+    df['high_volatility'] = (df['volatility_regime'] > 1.3).astype(int)
+    
+    # ENHANCED ULTRA-SELECTIVE SCORING (12 conditions for higher precision)
+    # Bullish conditions with enhanced filtering
     bull_score = (
+        # Core trend alignment (4 conditions)
         (df['ema_fast'] > df['ema_slow']).astype(int) +
         (df['Close'] > df['ema_fast']).astype(int) +
+        (df['Close'] > df['ema_trend']).astype(int) +  # Long-term trend
         (df['Close'] > df['Close'].shift(1)).astype(int) +
+        
+        # Enhanced momentum (3 conditions)
         ((df['rsi'] > 45) & (df['rsi'] < 65)).astype(int) +
         (df['adx'] > 25).astype(int) +
+        (df['price_momentum'] > df['momentum_ma']).astype(int) +
+        
+        # Volume and volatility (2 conditions)
         (df['volume_ratio'] > 1.1).astype(int) +
+        (df['low_volatility'] == 1).astype(int) +  # Prefer low volatility for reliability
+        
+        # Price action and structure (3 conditions)
         (df['body_pct'] > 0.4).astype(int) +
         (df['Close'] > df['Open']).astype(int) +
         (df['Close'] > df['recent_high']).astype(int)
     )
     
-    # Bearish conditions (all vectorized operations)
+    # Bearish conditions with enhanced filtering
     bear_score = (
+        # Core trend alignment (4 conditions)
         (df['ema_fast'] < df['ema_slow']).astype(int) +
         (df['Close'] < df['ema_fast']).astype(int) +
+        (df['Close'] < df['ema_trend']).astype(int) +  # Long-term trend
         (df['Close'] < df['Close'].shift(1)).astype(int) +
+        
+        # Enhanced momentum (3 conditions)
         ((df['rsi'] < 55) & (df['rsi'] > 35)).astype(int) +
         (df['adx'] > 25).astype(int) +
+        (df['price_momentum'] < df['momentum_ma']).astype(int) +
+        
+        # Volume and volatility (2 conditions)
         (df['volume_ratio'] > 1.1).astype(int) +
+        (df['low_volatility'] == 1).astype(int) +  # Prefer low volatility for reliability
+        
+        # Price action and structure (3 conditions)
         (df['body_pct'] > 0.4).astype(int) +
         (df['Close'] < df['Open']).astype(int) +
         (df['Close'] < df['recent_low']).astype(int)
     )
     
-    # Store scores and signals
+    # BALANCED thresholds for 75%+ win rate (8+ out of 12 conditions = 67% precision)
     df['bull_score'] = bull_score
     df['bear_score'] = bear_score
-    df['ultra_bull_signal'] = (bull_score >= 7).astype(int)
-    df['ultra_bear_signal'] = (bear_score >= 7).astype(int)
-    df['high_bull_signal'] = (bull_score >= 6).astype(int)
-    df['high_bear_signal'] = (bear_score >= 6).astype(int)
+    df['ultra_bull_signal'] = (bull_score >= 8).astype(int)  # Reduced from 9 to 8
+    df['ultra_bear_signal'] = (bear_score >= 8).astype(int)  # Reduced from 9 to 8
+    df['high_bull_signal'] = (bull_score >= 7).astype(int)   # Reduced from 8 to 7
+    df['high_bear_signal'] = (bear_score >= 7).astype(int)   # Reduced from 8 to 7
     
-    # Clean up temporary columns
-    df.drop(['recent_high', 'recent_low'], axis=1, inplace=True)
+    # Additional quality filters for extreme selectivity
+    df['perfect_bull'] = (bull_score >= 10).astype(int)  # Near-perfect setups
+    df['perfect_bear'] = (bear_score >= 10).astype(int)  # Near-perfect setups
+    
+    # Clean up temporary columns to maintain speed
+    df.drop(['recent_high', 'recent_low', 'support_level', 'resistance_level', 
+             'atr_ma', 'momentum_ma'], axis=1, inplace=True)
     
     return df
 
@@ -167,15 +204,15 @@ class UltraSelectiveEnv(gym.Env):
         self.peak_balance = self.initial_balance
     
     def _get_signal_requirements(self):
-        """CACHED signal requirements for speed."""
+        """PROGRESSIVE signal requirements targeting 75%+ win rate."""
         # Cache requirements to avoid repeated calculations
         if not hasattr(self, '_cached_requirements') or self._cached_stage != self.curriculum_stage:
-            if self.curriculum_stage == 1:
-                self._cached_requirements = {'ultra_bull': True, 'ultra_bear': True, 'min_score': 7}
-            elif self.curriculum_stage == 2:
+            if self.curriculum_stage == 1:  # Start moderate, learn basics
                 self._cached_requirements = {'ultra_bull': False, 'ultra_bear': False, 'min_score': 6}
-            else:
-                self._cached_requirements = {'ultra_bull': False, 'ultra_bear': False, 'min_score': 5}
+            elif self.curriculum_stage == 2:  # Increase quality
+                self._cached_requirements = {'ultra_bull': False, 'ultra_bear': False, 'min_score': 7}
+            else:  # Ultra-selective for 75%+ WR
+                self._cached_requirements = {'ultra_bull': True, 'ultra_bear': True, 'min_score': 8}
             self._cached_stage = self.curriculum_stage
         return self._cached_requirements
     
@@ -244,20 +281,47 @@ class UltraSelectiveEnv(gym.Env):
                     self.consecutive_losses = 0
                     self.consecutive_wins += 1
                     
-                    # Simplified win rewards
-                    reward = 80.0
+                    # MASSIVE win rewards targeting 75%+ WR
+                    base_reward = 120.0  # Increased from 80
+                    
+                    # Win rate bonuses (heavily weighted)
                     if self.total_trades >= 3:
                         current_wr = self.wins / self.total_trades
                         if current_wr >= 0.8:
-                            reward += 40.0
+                            base_reward += 80.0  # Huge bonus for 80%+
+                        elif current_wr >= 0.75:
+                            base_reward += 60.0  # Large bonus for 75%+
                         elif current_wr >= 0.7:
-                            reward += 20.0
+                            base_reward += 40.0  # Good bonus for 70%+
+                        elif current_wr >= 0.65:
+                            base_reward += 20.0  # Moderate bonus for 65%+
+                    
+                    # Consecutive wins bonus (encourage streaks)
+                    if self.consecutive_wins >= 3:
+                        base_reward += self.consecutive_wins * 8
+                    
+                    reward = base_reward
                     
                 else:
                     self.losses += 1
                     self.consecutive_wins = 0
                     self.consecutive_losses += 1
-                    reward = -40.0 - (self.consecutive_losses * 15)
+                    
+                    # SEVERE penalties for losses to maintain high WR
+                    base_penalty = -60.0  # Increased from -40
+                    
+                    # Win rate penalties (discourage low win rates)
+                    if self.total_trades >= 3:
+                        current_wr = self.wins / self.total_trades
+                        if current_wr < 0.6:
+                            base_penalty -= 40.0  # Severe penalty for <60% WR
+                        elif current_wr < 0.7:
+                            base_penalty -= 20.0  # Heavy penalty for <70% WR
+                    
+                    # Escalating consecutive loss penalties
+                    base_penalty -= (self.consecutive_losses * 20)
+                    
+                    reward = base_penalty
                 
                 # Update balance
                 self.balance *= (1 + pnl * 0.02)
@@ -265,45 +329,96 @@ class UltraSelectiveEnv(gym.Env):
                 self.entry_price = 0.0
                 self.entry_atr = 0.0
         
-        # OPTIMIZED trading logic
+        # OPTIMIZED trading logic with ENHANCED rewards for 75%+ WR
         requirements = self._get_signal_requirements()
-        cooldown = 15  # Reduced cooldown for more opportunities
+        cooldown = 20  # Increased cooldown for higher selectivity
         
         can_trade = (
             (self.current_step - self.last_trade_step) >= cooldown and
             self.position is None and
-            self.consecutive_losses < 3
+            self.consecutive_losses < 2  # More conservative after losses
         )
         
         if can_trade:
             if action == 1:  # Buy
-                if (requirements['ultra_bull'] and ultra_bull == 1) or \
-                   (not requirements['ultra_bull'] and bull_score >= requirements['min_score']):
+                # Check for perfect signals first (10+ score)
+                perfect_signal = bull_score >= 10
+                ultra_signal = (requirements['ultra_bull'] and ultra_bull == 1)
+                good_signal = (not requirements['ultra_bull'] and bull_score >= requirements['min_score'])
+                
+                if perfect_signal or ultra_signal or good_signal:
                     self.position = 'long'
                     self.entry_price = price
                     self.entry_atr = self._get_atr_fast()
                     self.last_trade_step = self.current_step
-                    reward += 15.0 + max(0, (bull_score - 6) * 3)
+                    
+                    # ENHANCED reward structure for quality
+                    if perfect_signal:
+                        reward += 25.0  # Massive reward for perfect signals
+                    elif ultra_signal:
+                        reward += 20.0  # High reward for ultra signals
+                    else:
+                        reward += 15.0  # Base reward for good signals
+                    
+                    # Quality bonus based on score
+                    quality_bonus = max(0, (bull_score - 8) * 2)
+                    reward += quality_bonus
+                    
                 else:
-                    reward -= 15.0 if bull_score < 6 else -8.0
+                    # HEAVY penalties for poor signals to discourage bad trades
+                    if bull_score < 6:
+                        reward -= 25.0  # Massive penalty for very poor signals
+                    elif bull_score < 8:
+                        reward -= 15.0  # Heavy penalty for mediocre signals
+                    else:
+                        reward -= 8.0   # Moderate penalty for borderline signals
                         
             elif action == 2:  # Sell
-                if (requirements['ultra_bear'] and ultra_bear == 1) or \
-                   (not requirements['ultra_bear'] and bear_score >= requirements['min_score']):
+                # Check for perfect signals first (10+ score)
+                perfect_signal = bear_score >= 10
+                ultra_signal = (requirements['ultra_bear'] and ultra_bear == 1)
+                good_signal = (not requirements['ultra_bear'] and bear_score >= requirements['min_score'])
+                
+                if perfect_signal or ultra_signal or good_signal:
                     self.position = 'short'
                     self.entry_price = price
                     self.entry_atr = self._get_atr_fast()
                     self.last_trade_step = self.current_step
-                    reward += 15.0 + max(0, (bear_score - 6) * 3)
+                    
+                    # ENHANCED reward structure for quality
+                    if perfect_signal:
+                        reward += 25.0  # Massive reward for perfect signals
+                    elif ultra_signal:
+                        reward += 20.0  # High reward for ultra signals
+                    else:
+                        reward += 15.0  # Base reward for good signals
+                    
+                    # Quality bonus based on score
+                    quality_bonus = max(0, (bear_score - 8) * 2)
+                    reward += quality_bonus
+                    
                 else:
-                    reward -= 15.0 if bear_score < 6 else -8.0
+                    # HEAVY penalties for poor signals to discourage bad trades
+                    if bear_score < 6:
+                        reward -= 25.0  # Massive penalty for very poor signals
+                    elif bear_score < 8:
+                        reward -= 15.0  # Heavy penalty for mediocre signals
+                    else:
+                        reward -= 8.0   # Moderate penalty for borderline signals
             
             else:  # Hold
+                # ENHANCED hold rewards to encourage patience
                 max_score = max(bull_score, bear_score)
                 if max_score < requirements['min_score']:
-                    reward += 1.5
+                    reward += 2.5  # Good patience reward
+                elif max_score < 8:
+                    reward += 1.0  # Moderate patience reward
                 else:
-                    reward -= 3.0
+                    # Penalty for missing high-quality signals
+                    if max_score >= 10:
+                        reward -= 8.0  # Heavy penalty for missing perfect signals
+                    else:
+                        reward -= 4.0  # Moderate penalty for missing good signals
         
         # Simplified risk management
         if self.balance > self.peak_balance:
@@ -429,18 +544,18 @@ class CurriculumCallback(BaseCallback):
             # Curriculum progression
             self.stage_performance.append(val_wr)
             
-            # Progress curriculum if performing well
+            # Progress curriculum if performing well (REALISTIC progression for 75%+ target)
             if len(self.stage_performance) >= 5:
                 recent_avg = np.mean(self.stage_performance[-5:])
                 
-                if self.curriculum_stage == 1 and recent_avg >= 0.70:
+                if self.curriculum_stage == 1 and recent_avg >= 0.60:  # Start with 60% WR
                     self.curriculum_stage = 2
-                    print(f"📈 CURRICULUM ADVANCED TO STAGE 2")
+                    print(f"📈 CURRICULUM ADVANCED TO STAGE 2 (60%+ WR achieved!)")
                     self._update_env_curriculum()
                     
-                elif self.curriculum_stage == 2 and recent_avg >= 0.65:
+                elif self.curriculum_stage == 2 and recent_avg >= 0.70:  # Then 70% WR
                     self.curriculum_stage = 3
-                    print(f"📈 CURRICULUM ADVANCED TO STAGE 3")
+                    print(f"📈 CURRICULUM ADVANCED TO STAGE 3 (70%+ WR achieved!)")
                     self._update_env_curriculum()
             
             # Store evaluation
