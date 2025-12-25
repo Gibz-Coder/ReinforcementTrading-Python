@@ -407,7 +407,7 @@ class SimpleTrendCallback(BaseCallback):
         if self.num_timesteps % self.save_frequency == 0:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             checkpoint_name = f"simple_trend_checkpoint_{self.num_timesteps//1000}k_{timestamp}"
-            self.model.save(f"models/experimental/{checkpoint_name}")
+            self.model.save(f"../models/experimental/{checkpoint_name}")
             print(f"💾 Checkpoint saved: {checkpoint_name}")
         
         if self.num_timesteps % self.eval_freq == 0:
@@ -440,12 +440,12 @@ class SimpleTrendCallback(BaseCallback):
                 self.no_improve = 0
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
                 name = f"simple_trend_wr{wr*100:.0f}_ret{ret:+.0f}_{timestamp}"
-                self.model.save(f"models/experimental/{name}")
+                self.model.save(f"../models/experimental/{name}")
                 print(f"✅ NEW BEST: {name}")
                 
                 if wr >= 0.65 or (wr >= 0.55 and ret >= 5):
-                    os.makedirs("models/production", exist_ok=True)
-                    self.model.save(f"models/production/{name}")
+                    os.makedirs("../models/production", exist_ok=True)
+                    self.model.save(f"../models/production/{name}")
                     print(f"🏆 PRODUCTION MODEL!")
             else:
                 self.no_improve += 1
@@ -549,7 +549,7 @@ def train_simple_trend_rider(timesteps=1000000, n_envs=8):  # Default 1M timeste
     )
     
     # Train
-    os.makedirs("models/experimental", exist_ok=True)
+    os.makedirs("../models/experimental", exist_ok=True)
     callback = SimpleTrendCallback(val_df)
     
     print("\n🏋️ Training SIMPLE TREND RIDER...")
@@ -557,7 +557,7 @@ def train_simple_trend_rider(timesteps=1000000, n_envs=8):  # Default 1M timeste
     
     # Save final
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    model.save(f"models/experimental/simple_trend_final_{timestamp}")
+    model.save(f"../models/experimental/simple_trend_final_{timestamp}")
     
     print(f"\n🎉 Best win rate: {callback.best_wr*100:.1f}%")
     print(f"🎉 Best return: {callback.best_return:+.1f}%")
