@@ -1,14 +1,41 @@
-# Simple Trend Rider - Core Dependencies
+# Golden-Gibz - Advanced AI Trading System Dependencies
+
+# Core ML and RL Libraries
 numpy>=1.21.0
 pandas>=1.3.0
 pandas-ta>=0.3.14b
 torch>=1.11.0
 stable-baselines3>=1.6.0
 gymnasium>=0.26.0
-MetaTrader5>=5.0.37
-matplotlib>=3.5.0
-scikit-learn>=1.0.0
 
-# Optional for enhanced analysis
+# Trading and Market Data
+MetaTrader5>=5.0.37
+
+# Data Analysis and Visualization
+matplotlib>=3.5.0
 seaborn>=0.11.0
 plotly>=5.0.0
+scikit-learn>=1.0.0
+
+# System and Utilities
+psutil>=5.8.0
+tqdm>=4.62.0
+colorama>=0.4.4
+
+# Configuration and Logging
+pyyaml>=6.0
+python-dateutil>=2.8.0
+
+# Optional Performance Enhancements
+numba>=0.56.0  # JIT compilation for faster execution
+joblib>=1.1.0  # Parallel processing
+
+# Development and Testing (Optional)
+pytest>=6.0.0
+black>=22.0.0
+flake8>=4.0.0
+
+# Golden-Gibz Specific
+# All dependencies are compatible with the hybrid architecture
+# Python 3.8+ required for optimal performance
+# GPU support: Install torch with CUDA if available
