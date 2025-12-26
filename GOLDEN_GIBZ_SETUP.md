@@ -75,12 +75,50 @@ MODEL_PATH = "../models/production/golden_gibz_wr100_ret+25_20251225_215251"
    - Press F7 to compile
    - Fix any errors
 
-3. **Create Signal Directory:**
+3. **🚨 CRITICAL: Create Signal Directory:**
    ```
-   Create: MT5_Data_Folder/MQL5/Files/
+   Create: %APPDATA%\MetaQuotes\Terminal\[TERMINAL_ID]\MQL5\Files\
+   ```
+   
+   **Find Your Terminal ID:**
+   ```cmd
+   dir "%APPDATA%\MetaQuotes\Terminal"
+   ```
+   Look for folder like: `29E91DA909EB4475AB204481D1C2CE7D`
+   
+   **Create Files Directory:**
+   ```cmd
+   mkdir "%APPDATA%\MetaQuotes\Terminal\[YOUR_TERMINAL_ID]\MQL5\Files"
    ```
 
-### Step 4: Start Signal Generation
+### Step 4: Configure Signal Generator Path
+
+**🚨 CRITICAL STEP: Update Signal File Path**
+
+1. **Find Your MT5 Terminal ID:**
+   ```cmd
+   dir "%APPDATA%\MetaQuotes\Terminal"
+   ```
+   Example output: `29E91DA909EB4475AB204481D1C2CE7D`
+
+2. **Update Signal Generator:**
+   Edit `scripts/golden_gibz_signal_generator.py` around line 385:
+   ```python
+   # Replace YOUR_TERMINAL_ID with actual ID from step 1
+   mt5_files_path = os.path.join(os.getenv('APPDATA'), 'MetaQuotes', 'Terminal', 'YOUR_TERMINAL_ID', 'MQL5', 'Files')
+   SIGNAL_FILE = os.path.join(mt5_files_path, "signals.json")
+   ```
+
+3. **Verify Directory Exists:**
+   ```cmd
+   dir "%APPDATA%\MetaQuotes\Terminal\YOUR_TERMINAL_ID\MQL5\Files"
+   ```
+   If not found, create it:
+   ```cmd
+   mkdir "%APPDATA%\MetaQuotes\Terminal\YOUR_TERMINAL_ID\MQL5\Files"
+   ```
+
+### Step 5: Start Signal Generation
 
 ```bash
 cd scripts
@@ -99,7 +137,7 @@ python golden_gibz_signal_generator.py
    Market: Bull TF=3, Bear TF=1, Strength=5
 ```
 
-### Step 5: Attach EA to Chart
+### Step 6: Attach EA to Chart
 
 1. **Open XAUUSD Chart** (any timeframe)
 2. **Drag GoldenGibzEA** from Navigator to chart
@@ -122,6 +160,8 @@ python golden_gibz_signal_generator.py
 🟢 Executing LONG trade:
 ✅ LONG trade executed successfully
 ```
+
+**🚨 If EA doesn't execute trades:** See [Signal File Troubleshooting Guide](../docs/signal_file_troubleshooting.md)
 
 ## ⚙️ Configuration Options
 
@@ -216,16 +256,64 @@ Solution: Check MODEL_PATH in signal generator
 Verify: Model file exists and is not corrupted
 ```
 
-**3. "Signal file not found"**
+**3. "Signal file not found" (EA)**
 ```
-Solution: Ensure MQL5/Files/ directory exists
-Check: File permissions and path in EA settings
+🚨 MOST COMMON ISSUE: Wrong signal file path
+Solution: 
+1. Check MT5 Terminal ID: dir "%APPDATA%\MetaQuotes\Terminal"
+2. Update signal generator with correct path
+3. Ensure MQL5\Files directory exists
+4. Verify signal file is being written to correct location
 ```
 
-**4. "No signals generated"**
+**4. "EA receives signals but doesn't trade"**
+```
+Check EA Settings:
+- Enable actual trading: true
+- Trading hours: 0-24 (or adjust as needed)
+- Minimum confidence: 0.6 (signals should be >0.6)
+- Max daily loss not exceeded
+- Account balance sufficient for lot size
+```
+
+**5. "No signals generated"**
 ```
 Solution: Check market hours and data availability
 Verify: All timeframes have sufficient data
+Check: Signal generator logs for errors
+```
+
+### Signal File Path Verification
+
+**Step 1: Find MT5 Terminal Directory**
+```cmd
+dir "%APPDATA%\MetaQuotes\Terminal"
+```
+
+**Step 2: Check Files Directory Exists**
+```cmd
+dir "%APPDATA%\MetaQuotes\Terminal\[TERMINAL_ID]\MQL5\Files"
+```
+
+**Step 3: Verify Signal File Creation**
+```cmd
+dir "%APPDATA%\MetaQuotes\Terminal\[TERMINAL_ID]\MQL5\Files\signals.json"
+```
+
+**Step 4: Check Signal File Content**
+```cmd
+type "%APPDATA%\MetaQuotes\Terminal\[TERMINAL_ID]\MQL5\Files\signals.json"
+```
+
+Expected content:
+```json
+{
+  "timestamp": "2025-12-26T22:00:26",
+  "action": 1,
+  "action_name": "LONG",
+  "confidence": 0.99,
+  ...
+}
 ```
 
 ### Performance Optimization

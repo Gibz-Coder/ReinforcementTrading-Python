@@ -381,7 +381,11 @@ def main():
     # Configuration
     SYMBOL = "XAUUSD"
     MODEL_PATH = "../models/production/golden_gibz_wr100_ret+25_20251225_215251"  # Best model: 100% WR, +25% return
-    SIGNAL_FILE = "../mt5_ea/signals.json"
+    
+    # MT5 Files directory path
+    import os
+    mt5_files_path = os.path.join(os.getenv('APPDATA'), 'MetaQuotes', 'Terminal', '29E91DA909EB4475AB204481D1C2CE7D', 'MQL5', 'Files')
+    SIGNAL_FILE = os.path.join(mt5_files_path, "signals.json")
     LOG_FILE = "../logs/golden_gibz_signals.log"
     
     # Ensure directories exist
