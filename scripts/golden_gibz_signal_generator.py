@@ -38,6 +38,14 @@ class MT5DataProvider:
             return False
             
         print(f"✅ Connected to MT5 - Account: {account_info.login}")
+        
+        # Ensure symbol is selected
+        if not mt5.symbol_select(self.symbol, True):
+            print(f"❌ Failed to select symbol {self.symbol}: {mt5.last_error()}")
+            return False
+        
+        print(f"✅ Symbol {self.symbol} selected")
+        
         self.connected = True
         return True
     
@@ -382,20 +390,33 @@ def main():
     SYMBOL = "XAUUSD"
     MODEL_PATH = "../models/production/golden_gibz_wr100_ret+25_20251225_215251"  # Best model: 100% WR, +25% return
     
-    # MT5 Files directory path
+    # MT5 Files directory paths (write to all possible locations for compatibility)
     import os
-    mt5_files_path = os.path.join(os.getenv('APPDATA'), 'MetaQuotes', 'Terminal', '29E91DA909EB4475AB204481D1C2CE7D', 'MQL5', 'Files')
-    SIGNAL_FILE = os.path.join(mt5_files_path, "signals.json")
+    mt5_appdata_path = os.path.join(os.getenv('APPDATA'), 'MetaQuotes', 'Terminal', '29E91DA909EB4475AB204481D1C2CE7D', 'MQL5', 'Files')
+    mt5_documents_path = os.path.join(os.path.expanduser('~'), 'Documents', 'MT5', 'MQL5', 'Files')
+    mt5_program_path = r"C:\Program Files\Tickmill MT5 Terminal\MQL5\Files"
+    
+    # Ensure all directories exist
+    os.makedirs(mt5_appdata_path, exist_ok=True)
+    os.makedirs(mt5_documents_path, exist_ok=True)
+    os.makedirs(mt5_program_path, exist_ok=True)
+    
+    SIGNAL_FILES = [
+        os.path.join(mt5_appdata_path, "signals.json"),
+        os.path.join(mt5_documents_path, "signals.json"),
+        os.path.join(mt5_program_path, "signals.json")
+    ]
     LOG_FILE = "../logs/golden_gibz_signals.log"
     
-    # Ensure directories exist
-    os.makedirs(os.path.dirname(SIGNAL_FILE), exist_ok=True)
+    # Ensure directories exist (already done above)
     os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
     
     print("🎯 Golden-Gibz Signal Generator Starting...")
     print(f"Symbol: {SYMBOL}")
     print(f"Model: {MODEL_PATH}")
-    print(f"Signal File: {SIGNAL_FILE}")
+    print(f"Signal Files: {len(SIGNAL_FILES)} locations")
+    for i, path in enumerate(SIGNAL_FILES, 1):
+        print(f"  {i}. {path}")
     
     # Initialize components
     mt5_data = MT5DataProvider(SYMBOL)
@@ -441,9 +462,10 @@ def main():
                     signal = signal_gen.generate_signal(df_with_signals)
                     
                     if signal:
-                        # Save signal to file
-                        with open(SIGNAL_FILE, 'w') as f:
-                            json.dump(signal, f, indent=2)
+                        # Save signal to multiple file locations for compatibility
+                        for signal_file_path in SIGNAL_FILES:
+                            with open(signal_file_path, 'w') as f:
+                                json.dump(signal, f, indent=2)
                         
                         print(f"✅ Golden-Gibz Signal: {signal['action_name']} "
                               f"(Confidence: {signal['confidence']:.2f})")
