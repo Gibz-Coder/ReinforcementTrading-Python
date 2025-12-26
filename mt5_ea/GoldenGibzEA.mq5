@@ -104,7 +104,19 @@ void OnDeinit(const int reason)
 void OnTick()
 {
    // Check if new day
-   if (TimeToStruct(TimeCurrent()).day != TimeToStruct(currentDay).day)
+   MqlDateTime currentTime, dayTime;
+   TimeToStruct(TimeCurrent(), currentTime);
+   
+   // Initialize currentDay if it's zero (first run)
+   if (currentDay == 0)
+   {
+      ResetDailyCounters();
+      return;
+   }
+   
+   TimeToStruct(currentDay, dayTime);
+   
+   if (currentTime.day != dayTime.day)
    {
       ResetDailyCounters();
    }
@@ -147,8 +159,12 @@ bool ReadSignal(SignalData &signal)
    // Try to open signal file
    string fullPath = TerminalInfoString(TERMINAL_DATA_PATH) + "\\MQL5\\Files\\" + SignalFile;
    
+   // Reset file handle
+   signalFile.Close();
+   
    if (!signalFile.Open(fullPath, FILE_READ|FILE_TXT))
    {
+      // File not found or cannot be opened - this is normal when no signal exists yet
       return false;
    }
    
