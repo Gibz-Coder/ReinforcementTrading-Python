@@ -1,4 +1,4 @@
-# Golden-Gibz - Advanced AI Trading System Dependencies
+# Golden-Gibz Professional Python EA - Core Dependencies
 
 # Core ML and RL Libraries
 numpy>=1.21.0
@@ -8,34 +8,29 @@ torch>=1.11.0
 stable-baselines3>=1.6.0
 gymnasium>=0.26.0
 
-# Trading and Market Data
+# Trading Integration
 MetaTrader5>=5.0.37
 
-# Data Analysis and Visualization
-matplotlib>=3.5.0
-seaborn>=0.11.0
-plotly>=5.0.0
-scikit-learn>=1.0.0
-
-# System and Utilities
-psutil>=5.8.0
-tqdm>=4.62.0
+# Professional Dashboard
 colorama>=0.4.4
 
-# Configuration and Logging
+# Configuration Management
 pyyaml>=6.0
 python-dateutil>=2.8.0
 
-# Optional Performance Enhancements
-numba>=0.56.0  # JIT compilation for faster execution
-joblib>=1.1.0  # Parallel processing
+# Data Analysis (Optional - for model training)
+matplotlib>=3.5.0
+scikit-learn>=1.0.0
 
-# Development and Testing (Optional)
-pytest>=6.0.0
-black>=22.0.0
-flake8>=4.0.0
+# System Utilities
+psutil>=5.8.0
+tqdm>=4.62.0
 
-# Golden-Gibz Specific
-# All dependencies are compatible with the hybrid architecture
-# Python 3.8+ required for optimal performance
-# GPU support: Install torch with CUDA if available
+# Performance Enhancements (Optional)
+numba>=0.56.0
+joblib>=1.1.0
+
+# Golden-Gibz Professional EA
+# Python 3.8+ required
+# Standalone Python EA - No MT5 EA attachment needed
+# Direct MT5 API integration with professional dashboard

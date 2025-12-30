@@ -388,7 +388,7 @@ def main():
     
     # Configuration
     SYMBOL = "XAUUSD"
-    MODEL_PATH = "../models/production/golden_gibz_wr100_ret+25_20251225_215251"  # Best model: 100% WR, +25% return
+    MODEL_PATH = "models/production/golden_gibz_wr100_ret+25_20251225_215251.zip"  # Best model: 100% WR, +25% return
     
     # MT5 Files directory paths (write to all possible locations for compatibility)
     import os
