@@ -7,7 +7,7 @@ Complete autonomous EA with beautiful dashboard and advanced features
 
 import MetaTrader5 as mt5
 import pandas as pd
-import pandas_ta as pta
+import ta
 import numpy as np
 from stable_baselines3 import PPO
 import time
@@ -379,51 +379,65 @@ class GoldenGibzPythonEA:
             print(f"⚠️ Indicators error: {e}")
     
     def get_market_data(self):
-        """Get multi-timeframe market data for analysis - SIMPLIFIED VERSION."""
-        print("📊 Getting market data...")
+        """Get multi-timeframe market data from MT5 - REAL DATA."""
+        print("📊 Getting real market data from MT5...")
         
-        # Get current price from tick data
-        tick = mt5.symbol_info_tick(self.symbol)
-        if not tick:
-            print("❌ Could not get current price")
-            return None
+        # MT5 timeframe mapping
+        tf_map = {
+            '15M': mt5.TIMEFRAME_M15,
+            '1H': mt5.TIMEFRAME_H1,
+            '4H': mt5.TIMEFRAME_H4,
+            '1D': mt5.TIMEFRAME_D1
+        }
         
-        current_price = (tick.bid + tick.ask) / 2
-        print(f"✅ Current price: {current_price}")
+        # Bars needed for each timeframe
+        bars_needed = {
+            '15M': 200,
+            '1H': 100,
+            '4H': 100,
+            '1D': 100
+        }
         
-        # Create simplified data structure
-        # In a real implementation, you would get historical data
-        # For now, we'll simulate the data structure
         data = {}
         
-        timeframes = ['15M', '1H', '4H', '1D']
+        for tf_name, tf_mt5 in tf_map.items():
+            try:
+                # Get real historical data from MT5
+                rates = mt5.copy_rates_from_pos(self.symbol, tf_mt5, 0, bars_needed[tf_name])
+                
+                if rates is None or len(rates) == 0:
+                    print(f"❌ {tf_name}: No data available")
+                    data[tf_name] = None
+                    continue
+                
+                # Convert to DataFrame
+                df = pd.DataFrame(rates)
+                df['Date'] = pd.to_datetime(df['time'], unit='s')
+                df.set_index('Date', inplace=True)
+                
+                # Rename columns to match expected format
+                df.rename(columns={
+                    'open': 'Open',
+                    'high': 'High',
+                    'low': 'Low',
+                    'close': 'Close',
+                    'tick_volume': 'Volume'
+                }, inplace=True)
+                
+                # Keep only needed columns
+                df = df[['Open', 'High', 'Low', 'Close', 'Volume']]
+                
+                data[tf_name] = df
+                print(f"✅ {tf_name}: {len(df)} bars (real data)")
+                
+            except Exception as e:
+                print(f"❌ {tf_name}: Error getting data - {e}")
+                data[tf_name] = None
         
-        for tf in timeframes:
-            # Create a simple DataFrame with current price
-            # This simulates having historical data
-            dates = pd.date_range(end=datetime.now(), periods=200, freq='15T')
-            
-            # Simulate price movement around current price
-            np.random.seed(42)  # For consistent results
-            price_changes = np.random.normal(0, current_price * 0.001, 200)
-            prices = current_price + np.cumsum(price_changes)
-            
-            df = pd.DataFrame({
-                'Open': prices,
-                'High': prices * 1.001,
-                'Low': prices * 0.999,
-                'Close': prices,
-                'Volume': [1000] * 200
-            }, index=dates)
-            
-            # Set the last price to current price
-            df.iloc[-1, df.columns.get_loc('Close')] = current_price
-            df.iloc[-1, df.columns.get_loc('Open')] = current_price
-            df.iloc[-1, df.columns.get_loc('High')] = current_price * 1.001
-            df.iloc[-1, df.columns.get_loc('Low')] = current_price * 0.999
-            
-            data[tf] = df
-            print(f"✅ {tf}: {len(df)} bars simulated")
+        # Verify we have at least 15M data
+        if data.get('15M') is None or len(data['15M']) < 50:
+            print("❌ Insufficient 15M data for analysis")
+            return None
         
         return data
     
@@ -431,43 +445,40 @@ class GoldenGibzPythonEA:
         """Calculate technical indicators for Golden Gibz analysis."""
         try:
             # EMAs (configurable periods)
-            df['EMA20'] = pta.ema(df['Close'], length=self.indicators['ema_fast'])
-            df['EMA50'] = pta.ema(df['Close'], length=self.indicators['ema_slow'])
+            df['EMA20'] = ta.trend.ema_indicator(df['Close'], window=self.indicators['ema_fast'])
+            df['EMA50'] = ta.trend.ema_indicator(df['Close'], window=self.indicators['ema_slow'])
             
             # RSI (configurable period)
-            df['RSI'] = pta.rsi(df['Close'], length=self.indicators['rsi_period'])
+            df['RSI'] = ta.momentum.rsi(df['Close'], window=self.indicators['rsi_period'])
             
             # ATR (configurable period)
-            df['ATR'] = pta.atr(df['High'], df['Low'], df['Close'], length=self.indicators['atr_period'])
+            df['ATR'] = ta.volatility.average_true_range(df['High'], df['Low'], df['Close'], window=self.indicators['atr_period'])
             
             # Bollinger Bands (configurable period)
-            bb = pta.bbands(df['Close'], length=self.indicators['bb_period'])
-            if bb is not None:
-                df['BB_Upper'] = bb.iloc[:, 0]
-                df['BB_Middle'] = bb.iloc[:, 1] 
-                df['BB_Lower'] = bb.iloc[:, 2]
+            bb = ta.volatility.BollingerBands(df['Close'], window=self.indicators['bb_period'])
+            df['BB_Upper'] = bb.bollinger_hband()
+            df['BB_Middle'] = bb.bollinger_mavg()
+            df['BB_Lower'] = bb.bollinger_lband()
             
             # MACD (configurable periods)
-            macd = pta.macd(df['Close'], 
-                           fast=self.indicators['macd_fast'],
-                           slow=self.indicators['macd_slow'],
-                           signal=self.indicators['macd_signal'])
-            if macd is not None:
-                df['MACD'] = macd.iloc[:, 0]
-                df['MACD_Signal'] = macd.iloc[:, 1]
-                df['MACD_Hist'] = macd.iloc[:, 2]
+            macd = ta.trend.MACD(df['Close'], 
+                           window_fast=self.indicators['macd_fast'],
+                           window_slow=self.indicators['macd_slow'],
+                           window_sign=self.indicators['macd_signal'])
+            df['MACD'] = macd.macd()
+            df['MACD_Signal'] = macd.macd_signal()
+            df['MACD_Hist'] = macd.macd_diff()
             
             # Stochastic
-            stoch = pta.stoch(df['High'], df['Low'], df['Close'])
-            if stoch is not None:
-                df['Stoch_K'] = stoch.iloc[:, 0]
-                df['Stoch_D'] = stoch.iloc[:, 1]
+            stoch = ta.momentum.StochasticOscillator(df['High'], df['Low'], df['Close'])
+            df['Stoch_K'] = stoch.stoch()
+            df['Stoch_D'] = stoch.stoch_signal()
             
             # Williams %R
-            df['WillR'] = pta.willr(df['High'], df['Low'], df['Close'])
+            df['WillR'] = ta.momentum.williams_r(df['High'], df['Low'], df['Close'])
             
             # CCI
-            df['CCI'] = pta.cci(df['High'], df['Low'], df['Close'])
+            df['CCI'] = ta.trend.cci(df['High'], df['Low'], df['Close'])
             
             return df
             
@@ -476,11 +487,12 @@ class GoldenGibzPythonEA:
             return df
     
     def analyze_market_conditions(self, data):
-        """Analyze market conditions across multiple timeframes."""
+        """Analyze market conditions across multiple timeframes - FIXED VERSION."""
         try:
             conditions = {
                 'bull_timeframes': 0,
                 'bear_timeframes': 0,
+                'neutral_timeframes': 0,
                 'trend_strength': 0,
                 'rsi': 50.0,
                 'atr_pct': 0.0,
@@ -489,7 +501,10 @@ class GoldenGibzPythonEA:
                 'bull_pullback': False,
                 'bear_pullback': False,
                 'active_session': True,
-                'price': 0.0
+                'price': 0.0,
+                'ema20': 0.0,
+                'ema50': 0.0,
+                'trend_details': {}
             }
             
             # Get current price
@@ -507,57 +522,93 @@ class GoldenGibzPythonEA:
                 
                 # Get latest values
                 latest = df.iloc[-1]
-                prev = df.iloc[-2]
+                prev = df.iloc[-2] if len(df) > 1 else latest
                 
                 # Trend analysis
-                ema20 = latest['EMA20']
-                ema50 = latest['EMA50']
+                ema20 = latest.get('EMA20', np.nan)
+                ema50 = latest.get('EMA50', np.nan)
                 close = latest['Close']
-                rsi = latest['RSI']
+                rsi = latest.get('RSI', 50)
                 
-                # Determine trend direction
+                # Store trend details for debugging
+                trend_direction = 'NEUTRAL'
+                
+                # Determine trend direction based on EMA crossover
+                # Count based on EMA alignment (EMA20 vs EMA50), not price position
                 if pd.notna(ema20) and pd.notna(ema50):
-                    if ema20 > ema50 and close > ema20:
+                    if ema20 > ema50:
+                        # Bullish EMA structure
                         conditions['bull_timeframes'] += 1
-                        
-                        # Check for pullback
-                        if prev['Close'] < prev['EMA20'] and close > ema20:
+                        if close > ema20:
+                            trend_direction = 'BULLISH'
+                        else:
+                            trend_direction = 'BULL_PULLBACK'
                             conditions['bull_pullback'] = True
-                            
-                    elif ema20 < ema50 and close < ema20:
+                    elif ema20 < ema50:
+                        # Bearish EMA structure
                         conditions['bear_timeframes'] += 1
-                        
-                        # Check for pullback  
-                        if prev['Close'] > prev['EMA20'] and close < ema20:
+                        if close < ema20:
+                            trend_direction = 'BEARISH'
+                        else:
+                            trend_direction = 'BEAR_PULLBACK'
                             conditions['bear_pullback'] = True
+                    else:
+                        # EMAs are equal - neutral
+                        conditions['neutral_timeframes'] += 1
+                        trend_direction = 'NEUTRAL'
+                else:
+                    conditions['neutral_timeframes'] += 1
                 
-                # Store RSI from 15M timeframe
-                if tf_name == '15M' and pd.notna(rsi):
-                    conditions['rsi'] = rsi
+                conditions['trend_details'][tf_name] = {
+                    'direction': trend_direction,
+                    'ema20': float(ema20) if pd.notna(ema20) else 0,
+                    'ema50': float(ema50) if pd.notna(ema50) else 0,
+                    'close': float(close),
+                    'rsi': float(rsi) if pd.notna(rsi) else 50
+                }
                 
-                # Calculate ATR percentage from 15M
-                if tf_name == '15M' and pd.notna(latest['ATR']):
-                    conditions['atr_pct'] = (latest['ATR'] / close) * 100
+                # Store RSI and ATR from 15M timeframe
+                if tf_name == '15M':
+                    if pd.notna(rsi):
+                        conditions['rsi'] = float(rsi)
+                    if pd.notna(latest.get('ATR')):
+                        conditions['atr_pct'] = (latest['ATR'] / close) * 100
+                    conditions['ema20'] = float(ema20) if pd.notna(ema20) else 0
+                    conditions['ema50'] = float(ema50) if pd.notna(ema50) else 0
             
-            # Determine overall signals
-            total_timeframes = len(data)
+            # Print trend analysis for debugging
+            print(f"\n📊 TREND ANALYSIS:")
+            for tf, details in conditions['trend_details'].items():
+                print(f"   {tf}: {details['direction']} | Close: {details['close']:.2f} | EMA20: {details['ema20']:.2f} | EMA50: {details['ema50']:.2f}")
+            
+            # Total should equal bull + bear + neutral
+            total_timeframes = conditions['bull_timeframes'] + conditions['bear_timeframes'] + conditions['neutral_timeframes']
+            
+            print(f"\n📈 TIMEFRAME SUMMARY: Bull={conditions['bull_timeframes']}, Bear={conditions['bear_timeframes']}, Neutral={conditions['neutral_timeframes']}, Total={total_timeframes}")
+            
+            # Only signal if majority of timeframes agree
             if conditions['bull_timeframes'] >= 3:
                 conditions['bull_signal'] = True
                 conditions['trend_strength'] = min(10, conditions['bull_timeframes'] * 2.5)
+                print(f"   ➡️ BULLISH SIGNAL (3+ timeframes aligned)")
             elif conditions['bear_timeframes'] >= 3:
-                conditions['bear_signal'] = True  
+                conditions['bear_signal'] = True
                 conditions['trend_strength'] = min(10, conditions['bear_timeframes'] * 2.5)
+                print(f"   ➡️ BEARISH SIGNAL (3+ timeframes aligned)")
             else:
                 conditions['trend_strength'] = 5  # Neutral
+                print(f"   ➡️ NO CLEAR SIGNAL (insufficient alignment)")
             
-            # Check trading session (simplified)
+            # Check trading session
             current_hour = datetime.now().hour
-            conditions['active_session'] = 8 <= current_hour <= 17  # London/NY overlap
+            conditions['active_session'] = self.trading_hours['start'] <= current_hour <= self.trading_hours['end']
             
             return conditions
             
         except Exception as e:
             print(f"⚠️ Error analyzing market conditions: {e}")
+            import traceback
+            traceback.print_exc()
             return None
     
     def create_observation(self, data, conditions):
@@ -604,10 +655,12 @@ class GoldenGibzPythonEA:
             return np.zeros((20, 21), dtype=np.float32)
     
     def generate_signal(self):
-        """Generate trading signal using full Golden Gibz analysis."""
+        """Generate trading signal using full Golden Gibz analysis - FIXED VERSION."""
+        print(f"\n{'='*60}")
         print(f"🔄 Generating Golden Gibz signal at {datetime.now().strftime('%H:%M:%S')}")
+        print(f"{'='*60}")
         
-        # Get market data
+        # Get real market data from MT5
         data = self.get_market_data()
         if not data:
             print("❌ Failed to get market data")
@@ -619,21 +672,42 @@ class GoldenGibzPythonEA:
             print("❌ Failed to analyze market conditions")
             return None
         
-        # Create observation for AI model
-        observation = self.create_observation(data, conditions)
+        # Determine action based on market conditions (not just AI model)
+        # This ensures we trade WITH the trend, not against it
         
-        # Get AI prediction
-        try:
-            action, _states = self.model.predict(observation, deterministic=True)
-            action = int(action)
-        except Exception as e:
-            print(f"⚠️ Model prediction error: {e}")
-            action = 0  # Default to HOLD
+        if conditions['bull_signal']:
+            # Market is bullish - only consider LONG
+            action = 1  # LONG
+            confidence = 0.6 + (conditions['bull_timeframes'] - 3) * 0.1  # 0.6-0.8 based on alignment
+            
+            # Boost confidence if RSI is not overbought
+            if conditions['rsi'] < 70:
+                confidence += 0.1
+            
+            # Reduce confidence if RSI is very overbought
+            if conditions['rsi'] > 80:
+                confidence -= 0.2
+                
+        elif conditions['bear_signal']:
+            # Market is bearish - only consider SHORT
+            action = 2  # SHORT
+            confidence = 0.6 + (conditions['bear_timeframes'] - 3) * 0.1  # 0.6-0.8 based on alignment
+            
+            # Boost confidence if RSI is not oversold
+            if conditions['rsi'] > 30:
+                confidence += 0.1
+            
+            # Reduce confidence if RSI is very oversold
+            if conditions['rsi'] < 20:
+                confidence -= 0.2
+                
+        else:
+            # No clear trend - HOLD
+            action = 0
+            confidence = 0.3
         
-        # Calculate confidence (simplified)
-        confidence = 0.8 if conditions['bull_signal'] or conditions['bear_signal'] else 0.5
-        if conditions['bull_timeframes'] >= 4 or conditions['bear_timeframes'] >= 4:
-            confidence = min(1.0, confidence + 0.2)
+        # Clamp confidence
+        confidence = max(0.0, min(1.0, confidence))
         
         # Create signal
         signal = {
@@ -649,8 +723,12 @@ class GoldenGibzPythonEA:
             }
         }
         
+        print(f"\n{'='*60}")
         print(f"✅ Golden Gibz Signal: {signal['action_name']} (Confidence: {confidence:.2f})")
-        print(f"   Market: Bull TF={conditions['bull_timeframes']}, Bear TF={conditions['bear_timeframes']}, Strength={conditions['trend_strength']}")
+        print(f"   Bull TF={conditions['bull_timeframes']}, Bear TF={conditions['bear_timeframes']}")
+        print(f"   RSI={conditions['rsi']:.1f}, Price={conditions['price']:.2f}")
+        print(f"   EMA20={conditions['ema20']:.2f}, EMA50={conditions['ema50']:.2f}")
+        print(f"{'='*60}")
         
         return signal
     
