@@ -859,11 +859,22 @@ class GoldenGibzPythonEA:
             print(f"⚠️ Signal confidence too low: {confidence:.2f} < {self.min_confidence}")
             return False
         
-        # Check position limits
+        # Check position limits - allow up to max_positions in SAME direction
         positions = mt5.positions_get(symbol=self.symbol)
-        if positions and len(positions) >= self.max_positions:
-            print(f"⚠️ Max positions reached: {len(positions)}/{self.max_positions}")
-            return False
+        if positions:
+            # Count positions by direction
+            long_count = sum(1 for pos in positions if pos.type == 0)  # BUY positions
+            short_count = sum(1 for pos in positions if pos.type == 1)  # SELL positions
+            
+            # For LONG signals, check if we can add more LONG positions
+            if action == 1 and long_count >= self.max_positions:
+                print(f"⚠️ Max LONG positions reached: {long_count}/{self.max_positions}")
+                return False
+            
+            # For SHORT signals, check if we can add more SHORT positions  
+            if action == 2 and short_count >= self.max_positions:
+                print(f"⚠️ Max SHORT positions reached: {short_count}/{self.max_positions}")
+                return False
         
         # Execute based on action
         if action == 1:  # LONG
@@ -887,14 +898,6 @@ class GoldenGibzPythonEA:
         if not tick:
             print("❌ Could not get current price")
             return False
-        
-        # Check if we already have a position in same direction
-        positions = mt5.positions_get(symbol=self.symbol)
-        if positions:
-            for pos in positions:
-                if pos.type == 0:  # Already have a BUY position
-                    print(f"⚠️ Already have LONG position - skipping")
-                    return False
         
         # Calculate lot size (dynamic or fixed)
         lot_size = self.calculate_dynamic_lot_size()
@@ -961,14 +964,6 @@ class GoldenGibzPythonEA:
         if not tick:
             print("❌ Could not get current price")
             return False
-        
-        # Check if we already have a position in same direction
-        positions = mt5.positions_get(symbol=self.symbol)
-        if positions:
-            for pos in positions:
-                if pos.type == 1:  # Already have a SELL position
-                    print(f"⚠️ Already have SHORT position - skipping")
-                    return False
         
         # Calculate lot size (dynamic or fixed)
         lot_size = self.calculate_dynamic_lot_size()

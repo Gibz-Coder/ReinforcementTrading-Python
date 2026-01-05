@@ -13,7 +13,7 @@
     },
     "risk_per_trade": 2.0,
     "use_dynamic_lots": false,
-    "dashboard_refresh": 5,
+    "dashboard_refresh": 10,
     "show_indicators": true,
     "show_positions": true,
     "indicators": {
