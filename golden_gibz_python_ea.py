@@ -34,6 +34,7 @@ class GoldenGibzPythonEA:
         self.trade_counter = 0
         self.running = True
         self.last_signal_time = None
+        self.last_trade_time = None  # Track last trade for cooldown
         self.start_time = datetime.now()
         
         # Trading parameters (configurable)
@@ -41,6 +42,7 @@ class GoldenGibzPythonEA:
         self.max_positions = self.config.get("max_positions", 3)
         self.min_confidence = self.config.get("min_confidence", 0.6)
         self.signal_frequency = self.config.get("signal_frequency", 60)
+        self.trade_cooldown = self.config.get("trade_cooldown", 300)  # 5 min cooldown between trades
         
         # Advanced features
         self.max_daily_trades = self.config.get("max_daily_trades", 10)
@@ -153,8 +155,18 @@ class GoldenGibzPythonEA:
         if current_date != self.last_reset_date:
             self.daily_trades = 0
             self.daily_pnl = 0.0
+            # Don't reset winning_trades and losing_trades - they're cumulative
             self.last_reset_date = current_date
             print(f"📅 Daily stats reset for {current_date}")
+    
+    def reset_statistics(self):
+        """Manually reset all statistics."""
+        self.winning_trades = 0
+        self.losing_trades = 0
+        self.total_trades = 0
+        self.daily_trades = 0
+        self.daily_pnl = 0.0
+        print("📊 All statistics reset to zero")
     
     def is_trading_time(self):
         """Check if current time is within trading hours."""
@@ -268,9 +280,10 @@ class GoldenGibzPythonEA:
             print(f"\n{Fore.BLUE}{Style.BRIGHT}📈 MARKET STATUS{Style.RESET_ALL}")
             print(f"{'─'*50}")
             if tick:
-                spread = (tick.ask - tick.bid) / 0.01  # Convert to pips for XAUUSD
+                # XAUUSD spread in points (not pips) - 1 point = $0.01
+                spread_points = tick.ask - tick.bid
                 print(f"Symbol: {Fore.CYAN}{self.symbol}{Style.RESET_ALL} | Price: {Fore.YELLOW}{tick.bid:.2f}/{tick.ask:.2f}{Style.RESET_ALL}")
-                print(f"Spread: {Fore.MAGENTA}{spread:.1f} pips{Style.RESET_ALL} | Time: {Fore.WHITE}{current_time.strftime('%H:%M:%S')}{Style.RESET_ALL}")
+                print(f"Spread: {Fore.MAGENTA}{spread_points:.2f} points{Style.RESET_ALL} | Time: {Fore.WHITE}{current_time.strftime('%H:%M:%S')}{Style.RESET_ALL}")
             
             trading_status = "🟢 ACTIVE" if self.is_trading_time() else "🔴 CLOSED"
             print(f"Trading Hours: {Fore.CYAN}{self.trading_hours['start']:02d}:00-{self.trading_hours['end']:02d}:00{Style.RESET_ALL} | Status: {trading_status}")
@@ -291,11 +304,12 @@ class GoldenGibzPythonEA:
                 print(f"Total P&L: {profit_color}${total_profit:.2f}{Style.RESET_ALL}")
             
             # Trading Statistics
-            win_rate = (self.winning_trades / max(1, self.total_trades)) * 100
+            total_closed_trades = self.winning_trades + self.losing_trades
+            win_rate = (self.winning_trades / max(1, total_closed_trades)) * 100 if total_closed_trades > 0 else 0
             print(f"\n{Fore.YELLOW}{Style.BRIGHT}📊 TRADING STATISTICS{Style.RESET_ALL}")
             print(f"{'─'*60}")
             print(f"Daily Trades: {Fore.CYAN}{self.daily_trades}/{self.max_daily_trades}{Style.RESET_ALL} | Daily P&L: {Fore.GREEN if self.daily_pnl >= 0 else Fore.RED}${self.daily_pnl:.2f}{Style.RESET_ALL}")
-            print(f"Total Trades: {Fore.CYAN}{self.total_trades}{Style.RESET_ALL} | Win Rate: {Fore.GREEN if win_rate >= 70 else Fore.YELLOW if win_rate >= 50 else Fore.RED}{win_rate:.1f}%{Style.RESET_ALL}")
+            print(f"Closed Trades: {Fore.CYAN}{total_closed_trades}{Style.RESET_ALL} | Win Rate: {Fore.GREEN if win_rate >= 70 else Fore.YELLOW if win_rate >= 50 else Fore.RED}{win_rate:.1f}%{Style.RESET_ALL}")
             print(f"Wins: {Fore.GREEN}{self.winning_trades}{Style.RESET_ALL} | Losses: {Fore.RED}{self.losing_trades}{Style.RESET_ALL}")
             print(f"Uptime: {Fore.CYAN}{str(uptime).split('.')[0]}{Style.RESET_ALL}")
             
@@ -374,6 +388,80 @@ class GoldenGibzPythonEA:
             macd_signal = latest.get('MACD_Signal', 0)
             macd_trend = "🟢 Bullish" if macd > macd_signal else "🔴 Bearish"
             print(f"MACD: {macd_trend} | MACD: {Fore.CYAN}{macd:.3f}{Style.RESET_ALL} | Signal: {Fore.CYAN}{macd_signal:.3f}{Style.RESET_ALL}")
+            
+            # Technical Summary - Trade Confidence
+            print(f"\n{Fore.WHITE}{Style.BRIGHT}📊 TRADE CONFIDENCE{Style.RESET_ALL}")
+            print(f"{'─'*40}")
+            
+            # Calculate confidence score (0-100%)
+            confidence_score = 0
+            max_score = 100
+            
+            # EMA trend (30 points)
+            if ema20 > ema50:
+                ema_gap = ((ema20 - ema50) / ema50) * 100
+                confidence_score += min(30, max(0, ema_gap * 10))  # Strong trend = higher confidence
+                trend_signal = f"{Fore.GREEN}BULLISH{Style.RESET_ALL}"
+            else:
+                ema_gap = ((ema50 - ema20) / ema20) * 100
+                confidence_score += min(30, max(0, ema_gap * 10))
+                trend_signal = f"{Fore.RED}BEARISH{Style.RESET_ALL}"
+            
+            # RSI momentum (25 points)
+            if 30 <= rsi <= 70:  # Good range
+                confidence_score += 25
+                rsi_signal = f"{Fore.GREEN}OPTIMAL{Style.RESET_ALL}"
+            elif 20 <= rsi <= 80:  # Acceptable
+                confidence_score += 15
+                rsi_signal = f"{Fore.YELLOW}ACCEPTABLE{Style.RESET_ALL}"
+            else:  # Extreme
+                confidence_score += 5
+                rsi_signal = f"{Fore.RED}EXTREME{Style.RESET_ALL}"
+            
+            # MACD momentum (25 points)
+            if abs(macd - macd_signal) > 0.5:  # Strong signal
+                confidence_score += 25
+                macd_signal_strength = f"{Fore.GREEN}STRONG{Style.RESET_ALL}"
+            elif abs(macd - macd_signal) > 0.2:  # Moderate
+                confidence_score += 15
+                macd_signal_strength = f"{Fore.YELLOW}MODERATE{Style.RESET_ALL}"
+            else:  # Weak
+                confidence_score += 5
+                macd_signal_strength = f"{Fore.RED}WEAK{Style.RESET_ALL}"
+            
+            # Volatility (20 points) - Lower ATR = higher confidence
+            if atr_pct < 0.15:  # Low volatility
+                confidence_score += 20
+                volatility_signal = f"{Fore.GREEN}LOW{Style.RESET_ALL}"
+            elif atr_pct < 0.25:  # Medium
+                confidence_score += 10
+                volatility_signal = f"{Fore.YELLOW}MEDIUM{Style.RESET_ALL}"
+            else:  # High
+                confidence_score += 0
+                volatility_signal = f"{Fore.RED}HIGH{Style.RESET_ALL}"
+            
+            # Overall confidence
+            confidence_pct = min(100, confidence_score)
+            
+            if confidence_pct >= 80:
+                confidence_color = Fore.GREEN
+                confidence_status = "🟢 VERY HIGH"
+            elif confidence_pct >= 60:
+                confidence_color = Fore.YELLOW
+                confidence_status = "🟡 HIGH"
+            elif confidence_pct >= 40:
+                confidence_color = Fore.YELLOW
+                confidence_status = "🟡 MEDIUM"
+            else:
+                confidence_color = Fore.RED
+                confidence_status = "🔴 LOW"
+            
+            print(f"Trend Direction: {trend_signal}")
+            print(f"RSI Condition: {rsi_signal}")
+            print(f"MACD Strength: {macd_signal_strength}")
+            print(f"Volatility: {volatility_signal}")
+            print(f"{'─'*40}")
+            print(f"Trade Confidence: {confidence_color}{confidence_pct:.0f}%{Style.RESET_ALL} {confidence_status}")
             
         except Exception as e:
             print(f"⚠️ Indicators error: {e}")
@@ -740,19 +828,31 @@ class GoldenGibzPythonEA:
         # Reset daily stats if new day
         self.reset_daily_stats()
         
+        # Update statistics first to get current P&L
+        self.update_trade_statistics()
+        
         # Check trading time
         if not self.is_trading_time():
             print(f"⏰ Outside trading hours ({self.trading_hours['start']:02d}:00-{self.trading_hours['end']:02d}:00)")
             return False
         
-        # Check daily limits
+        # Check daily loss limit
+        if self.daily_pnl <= -self.max_daily_loss:
+            print(f"🚫 Daily loss limit reached: ${self.daily_pnl:.2f} (Limit: -${self.max_daily_loss})")
+            return False
+        
+        # Check daily trade limit
         if self.daily_trades >= self.max_daily_trades:
             print(f"🚫 Daily trade limit reached: {self.daily_trades}/{self.max_daily_trades}")
             return False
         
-        if self.daily_pnl <= -self.max_daily_loss:
-            print(f"🚫 Daily loss limit reached: ${self.daily_pnl:.2f}")
-            return False
+        # Check trade cooldown
+        if self.last_trade_time:
+            time_since_trade = (datetime.now() - self.last_trade_time).total_seconds()
+            if time_since_trade < self.trade_cooldown:
+                remaining = self.trade_cooldown - time_since_trade
+                print(f"⏳ Trade cooldown: {remaining:.0f}s remaining")
+                return False
         
         # Check confidence threshold
         if confidence < self.min_confidence:
@@ -778,10 +878,23 @@ class GoldenGibzPythonEA:
         """Execute LONG trade with enhanced features."""
         print(f"{Fore.GREEN}{Style.BRIGHT}🟢 EXECUTING AI-GENERATED LONG TRADE!{Style.RESET_ALL}")
         
+        # Check daily loss limit BEFORE executing
+        if self.daily_pnl <= -self.max_daily_loss:
+            print(f"🚫 Cannot trade - Daily loss limit exceeded: ${self.daily_pnl:.2f}")
+            return False
+        
         tick = mt5.symbol_info_tick(self.symbol)
         if not tick:
             print("❌ Could not get current price")
             return False
+        
+        # Check if we already have a position in same direction
+        positions = mt5.positions_get(symbol=self.symbol)
+        if positions:
+            for pos in positions:
+                if pos.type == 0:  # Already have a BUY position
+                    print(f"⚠️ Already have LONG position - skipping")
+                    return False
         
         # Calculate lot size (dynamic or fixed)
         lot_size = self.calculate_dynamic_lot_size()
@@ -790,14 +903,19 @@ class GoldenGibzPythonEA:
         risk_mgmt = signal.get('risk_management', {})
         atr_value = risk_mgmt.get('atr_value', 15.0)
         
+        # Ensure minimum SL/TP distance (at least $10 for XAUUSD)
+        min_distance = 10.0
+        sl_distance = max(min_distance, atr_value * 2)
+        tp_distance = max(min_distance, atr_value * 2)
+        
         request = {
             'action': mt5.TRADE_ACTION_DEAL,
             'symbol': self.symbol,
             'volume': lot_size,
             'type': mt5.ORDER_TYPE_BUY,
             'price': tick.ask,
-            'sl': tick.ask - (atr_value * 2),
-            'tp': tick.ask + (atr_value * 2),
+            'sl': tick.ask - sl_distance,
+            'tp': tick.ask + tp_distance,
             'deviation': 20,
             'magic': 88888,
             'comment': f'Golden-Gibz AI LONG #{self.trade_counter + 1}',
@@ -823,6 +941,7 @@ class GoldenGibzPythonEA:
             self.trade_counter += 1
             self.daily_trades += 1
             self.total_trades += 1
+            self.last_trade_time = datetime.now()  # Set cooldown timer
             
             return True
         else:
@@ -833,10 +952,23 @@ class GoldenGibzPythonEA:
         """Execute SHORT trade with enhanced features."""
         print(f"{Fore.RED}{Style.BRIGHT}🔴 EXECUTING AI-GENERATED SHORT TRADE!{Style.RESET_ALL}")
         
+        # Check daily loss limit BEFORE executing
+        if self.daily_pnl <= -self.max_daily_loss:
+            print(f"🚫 Cannot trade - Daily loss limit exceeded: ${self.daily_pnl:.2f}")
+            return False
+        
         tick = mt5.symbol_info_tick(self.symbol)
         if not tick:
             print("❌ Could not get current price")
             return False
+        
+        # Check if we already have a position in same direction
+        positions = mt5.positions_get(symbol=self.symbol)
+        if positions:
+            for pos in positions:
+                if pos.type == 1:  # Already have a SELL position
+                    print(f"⚠️ Already have SHORT position - skipping")
+                    return False
         
         # Calculate lot size (dynamic or fixed)
         lot_size = self.calculate_dynamic_lot_size()
@@ -845,14 +977,19 @@ class GoldenGibzPythonEA:
         risk_mgmt = signal.get('risk_management', {})
         atr_value = risk_mgmt.get('atr_value', 15.0)
         
+        # Ensure minimum SL/TP distance (at least $10 for XAUUSD)
+        min_distance = 10.0
+        sl_distance = max(min_distance, atr_value * 2)
+        tp_distance = max(min_distance, atr_value * 2)
+        
         request = {
             'action': mt5.TRADE_ACTION_DEAL,
             'symbol': self.symbol,
             'volume': lot_size,
             'type': mt5.ORDER_TYPE_SELL,
             'price': tick.bid,
-            'sl': tick.bid + (atr_value * 2),
-            'tp': tick.bid - (atr_value * 2),
+            'sl': tick.bid + sl_distance,
+            'tp': tick.bid - tp_distance,
             'deviation': 20,
             'magic': 88888,
             'comment': f'Golden-Gibz AI SHORT #{self.trade_counter + 1}',
@@ -878,6 +1015,7 @@ class GoldenGibzPythonEA:
             self.trade_counter += 1
             self.daily_trades += 1
             self.total_trades += 1
+            self.last_trade_time = datetime.now()  # Set cooldown timer
             
             return True
         else:
@@ -885,28 +1023,42 @@ class GoldenGibzPythonEA:
             return False
     
     def update_trade_statistics(self):
-        """Update trading statistics based on closed positions."""
+        """Update trading statistics based on closed positions and open P&L."""
         try:
-            # Get today's deals
+            # Get today's deals for closed trade statistics
             today = datetime.now().date()
-            deals = mt5.history_deals_get(
-                datetime.combine(today, datetime.min.time()),
-                datetime.combine(today, datetime.max.time())
-            )
+            from_date = datetime.combine(today, datetime.min.time())
+            to_date = datetime.combine(today, datetime.max.time())
             
+            deals = mt5.history_deals_get(from_date, to_date)
+            
+            closed_pnl = 0.0
             if deals:
-                daily_profit = 0
                 for deal in deals:
                     if deal.symbol == self.symbol and deal.magic == 88888:
-                        daily_profit += deal.profit
+                        closed_pnl += deal.profit
                         
-                        # Update win/loss statistics
-                        if deal.profit > 0:
-                            self.winning_trades += 1
-                        elif deal.profit < 0:
-                            self.losing_trades += 1
-                
-                self.daily_pnl = daily_profit
+                        # Update win/loss statistics (only count closing deals)
+                        if deal.entry == 1:  # Exit deal
+                            if deal.profit > 0:
+                                self.winning_trades += 1
+                            elif deal.profit < 0:
+                                self.losing_trades += 1
+            
+            # Also include unrealized P&L from open positions
+            positions = mt5.positions_get(symbol=self.symbol)
+            open_pnl = 0.0
+            if positions:
+                for pos in positions:
+                    if pos.magic == 88888:
+                        open_pnl += pos.profit
+            
+            # Total daily P&L = closed + open
+            self.daily_pnl = closed_pnl + open_pnl
+            
+            # Check if daily loss limit exceeded
+            if self.daily_pnl <= -self.max_daily_loss:
+                print(f"🚨 DAILY LOSS LIMIT EXCEEDED: ${self.daily_pnl:.2f} (Limit: -${self.max_daily_loss})")
                 
         except Exception as e:
             print(f"⚠️ Statistics update error: {e}")
