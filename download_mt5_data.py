@@ -42,15 +42,11 @@ class MT5DataDownloader:
         self.connected = True
         return True
     
-    def download_timeframe_data(self, timeframe_str, timeframe_mt5, months_back=12):
-        """Download data for specific timeframe."""
+    def download_timeframe_data(self, timeframe_str, timeframe_mt5, start_date, end_date):
+        """Download data for specific timeframe with custom date range."""
         if not self.connected:
             print("❌ Not connected to MT5")
             return None
-        
-        # Calculate date range
-        end_date = datetime.now()
-        start_date = end_date - timedelta(days=months_back * 30)  # Approximate
         
         print(f"\n📊 Downloading {timeframe_str} data...")
         print(f"   Period: {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}")
@@ -97,9 +93,34 @@ class MT5DataDownloader:
         print(f"Period: {months_back} months")
         print(f"{'='*60}{Style.RESET_ALL}")
         
-        # Timeframe mapping
+        # Timeframe mapping - including 30m as requested
         timeframes = {
             '15m': mt5.TIMEFRAME_M15,
+            '30m': mt5.TIMEFRAME_M30,
+            '1h': mt5.TIMEFRAME_H1,
+            '4h': mt5.TIMEFRAME_H4,
+            '1d': mt5.TIMEFRAME_D1
+        }
+        
+    def download_all_timeframes(self, start_date=None, end_date=None, save_to_disk=True):
+        """Download all required timeframes for specified date range."""
+        # Default to 2+ years of data as requested
+        if end_date is None:
+            end_date = datetime.now()
+        if start_date is None:
+            start_date = datetime(2023, 1, 1)  # Jan 1, 2023 as requested
+        
+        print(f"{Fore.CYAN}{Style.BRIGHT}🎯 MT5 HISTORICAL DATA DOWNLOADER")
+        print(f"{'='*60}")
+        print(f"Symbol: {self.symbol}")
+        print(f"Period: {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}")
+        print(f"Duration: {(end_date - start_date).days} days ({(end_date - start_date).days/365:.1f} years)")
+        print(f"{'='*60}{Style.RESET_ALL}")
+        
+        # Timeframe mapping - including 30m as requested
+        timeframes = {
+            '15m': mt5.TIMEFRAME_M15,
+            '30m': mt5.TIMEFRAME_M30,
             '1h': mt5.TIMEFRAME_H1,
             '4h': mt5.TIMEFRAME_H4,
             '1d': mt5.TIMEFRAME_D1
@@ -108,7 +129,7 @@ class MT5DataDownloader:
         downloaded_data = {}
         
         for tf_name, tf_mt5 in timeframes.items():
-            df = self.download_timeframe_data(tf_name, tf_mt5, months_back)
+            df = self.download_timeframe_data(tf_name, tf_mt5, start_date, end_date)
             
             if df is not None:
                 downloaded_data[tf_name] = df
@@ -182,29 +203,46 @@ def main():
         if not downloader.connect():
             return
         
-        # Download data (12 months by default)
-        print(f"\n{Fore.YELLOW}How many months of data to download?")
-        print("1. 12 months (quick)")
-        print("2. 24 months (recommended)")
-        print("3. 36 months (comprehensive)")
-        print("4. 48 months (maximum)")
+        # Set up date range for 2+ years as requested
+        print(f"\n{Fore.YELLOW}📅 DATA DOWNLOAD OPTIONS:")
+        print("1. Full range: Jan 1, 2023 - Dec 31, 2025 (3 years)")
+        print("2. Recent 2 years: Jan 1, 2024 - Dec 31, 2025")
+        print("3. Custom date range")
         
-        choice = input(f"\nSelect option (1-4) [3]: {Style.RESET_ALL}").strip()
+        choice = input(f"\nSelect option (1-3) [1]: {Style.RESET_ALL}").strip() or "1"
         
-        months_map = {'1': 12, '2': 24, '3': 36, '4': 48}
-        months = months_map.get(choice, 36)  # Default to 36 months
+        if choice == "1":
+            start_date = datetime(2023, 1, 1)
+            end_date = datetime(2025, 12, 31)
+        elif choice == "2":
+            start_date = datetime(2024, 1, 1)
+            end_date = datetime(2025, 12, 31)
+        elif choice == "3":
+            start_str = input("Start date (YYYY-MM-DD) [2023-01-01]: ").strip() or "2023-01-01"
+            end_str = input("End date (YYYY-MM-DD) [2025-12-31]: ").strip() or "2025-12-31"
+            try:
+                start_date = datetime.strptime(start_str, "%Y-%m-%d")
+                end_date = datetime.strptime(end_str, "%Y-%m-%d")
+            except ValueError:
+                print("❌ Invalid date format, using defaults")
+                start_date = datetime(2023, 1, 1)
+                end_date = datetime(2025, 12, 31)
+        else:
+            start_date = datetime(2023, 1, 1)
+            end_date = datetime(2025, 12, 31)
         
-        print(f"\n🚀 Downloading {months} months of data...")
+        print(f"\n🚀 Downloading data from {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}...")
+        print(f"📊 Timeframes: 15m, 30m, 1h, 4h, 1d")
         
         # Download all timeframes
-        data = downloader.download_all_timeframes(months_back=months)
+        data = downloader.download_all_timeframes(start_date=start_date, end_date=end_date)
         
         # Show summary
         downloader.get_data_summary(data)
         
         # Verify files were created
         print(f"{Fore.GREEN}📁 Verifying saved files...")
-        for tf in ['15m', '1h', '4h', '1d']:
+        for tf in ['15m', '30m', '1h', '4h', '1d']:
             filename = f"data/raw/XAU_{tf}_data.csv"
             if os.path.exists(filename):
                 size_mb = os.path.getsize(filename) / (1024 * 1024)
@@ -213,7 +251,9 @@ def main():
                 print(f"❌ {filename} not found")
         
         print(f"\n{Fore.GREEN}{Style.BRIGHT}🎉 DATA DOWNLOAD COMPLETE!")
-        print(f"Ready for backtesting with fresh MT5 data!{Style.RESET_ALL}")
+        print(f"📊 Multi-timeframe data ready for backtesting!")
+        print(f"🎯 Use 15m for trade execution, 30m+ for trend analysis")
+        print(f"Ready for backtesting with real MT5 data!{Style.RESET_ALL}")
         
     except KeyboardInterrupt:
         print(f"\n⏹️ Download cancelled by user")
