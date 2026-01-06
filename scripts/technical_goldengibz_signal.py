@@ -42,9 +42,9 @@ class TechnicalGoldenGibzEA:
         
         # Trading parameters (configurable) - PURE TECHNICAL OPTIMIZED
         self.lot_size = self.config.get("lot_size", 0.01)
-        self.max_positions = self.config.get("max_positions", 1)  # Conservative approach
-        self.min_confidence = self.config.get("min_confidence", 0.4)  # Lowered for testing
-        self.signal_frequency = self.config.get("signal_frequency", 240)  # Every 4 bars (1 hour)
+        self.max_positions = self.config.get("max_positions", 1)  # Match backtest: 1 position
+        self.min_confidence = self.config.get("min_confidence", 0.75)  # Match backtest threshold
+        self.signal_frequency = self.config.get("signal_frequency", 240)  # Match backtest: every 4 bars
         self.trade_cooldown = self.config.get("trade_cooldown", 300)  # 5 min cooldown between trades
         
         # Advanced features
@@ -290,22 +290,22 @@ class TechnicalGoldenGibzEA:
         """Get multi-timeframe market data from MT5."""
         print("📊 Getting real market data from MT5...")
         
-        # MT5 timeframe mapping - ENHANCED WITH 30M
+        # MT5 timeframe mapping - MATCH BACKTEST NAMING
         tf_map = {
-            '15M': mt5.TIMEFRAME_M15,
-            '30M': mt5.TIMEFRAME_M30,
-            '1H': mt5.TIMEFRAME_H1,
-            '4H': mt5.TIMEFRAME_H4,
-            '1D': mt5.TIMEFRAME_D1
+            '15m': mt5.TIMEFRAME_M15,  # Use lowercase keys
+            '30m': mt5.TIMEFRAME_M30,
+            '1h': mt5.TIMEFRAME_H1,
+            '4h': mt5.TIMEFRAME_H4,
+            '1d': mt5.TIMEFRAME_D1
         }
         
-        # Bars needed for each timeframe
+        # Bars needed for each timeframe - MATCH BACKTEST
         bars_needed = {
-            '15M': 200,
-            '30M': 100,
-            '1H': 100,
-            '4H': 100,
-            '1D': 100
+            '15m': 200,
+            '30m': 100,
+            '1h': 100,
+            '4h': 100,
+            '1d': 100
         }
         
         data = {}
@@ -344,9 +344,9 @@ class TechnicalGoldenGibzEA:
                 print(f"❌ {tf_name}: Error getting data - {e}")
                 data[tf_name] = None
         
-        # Verify we have at least 15M data
-        if data.get('15M') is None or len(data['15M']) < 50:
-            print("❌ Insufficient 15M data for analysis")
+        # Verify we have at least 15m data - MATCH BACKTEST
+        if data.get('15m') is None or len(data['15m']) < 50:
+            print("❌ Insufficient 15m data for analysis")
             return None
         
         return data
@@ -526,16 +526,16 @@ class TechnicalGoldenGibzEA:
     def analyze_enhanced_conditions(self, data):
         """Enhanced multi-timeframe analysis - PURE TECHNICAL VERSION."""
         try:
-            # Timeframe weights (higher timeframes more important)
-            tf_weights = {'15M': 1, '30M': 2, '1H': 3, '4H': 4, '1D': 5}
+            # Timeframe weights (higher timeframes more important) - MATCH BACKTEST
+            tf_weights = {'15m': 1, '30m': 2, '1h': 3, '4h': 4, '1d': 5}
             
             total_bull_score = 0
             total_bear_score = 0
             total_weight = 0
             timeframe_signals = {}
             
-            # Get execution timeframe data
-            exec_data = data.get('15M')
+            # Get execution timeframe data - MATCH BACKTEST
+            exec_data = data.get('15m')  # Use lowercase to match backtest
             if exec_data is None or len(exec_data) < 50:
                 return None
             
@@ -543,8 +543,8 @@ class TechnicalGoldenGibzEA:
             exec_data = self.calculate_technical_indicators(exec_data)
             exec_row = exec_data.iloc[-1]
             
-            # Analyze each timeframe
-            for tf_name in ['15M', '30M', '1H', '4H', '1D']:
+            # Analyze each timeframe - MATCH BACKTEST
+            for tf_name in ['15m', '30m', '1h', '4h', '1d']:  # Use lowercase
                 if tf_name not in data or data[tf_name] is None:
                     continue
                 
@@ -1005,13 +1005,13 @@ class TechnicalGoldenGibzEA:
             print(f"\n{Fore.CYAN}{Style.BRIGHT}📊 TECHNICAL INDICATORS{Style.RESET_ALL}")
             print(f"{'─'*60}")
             
-            # Get recent data for indicators
+            # Get recent data for indicators - MATCH BACKTEST
             data = self.get_market_data()
-            if not data or '15M' not in data:
+            if not data or '15m' not in data:
                 print(f"{Fore.RED}⚠️ No indicator data available{Style.RESET_ALL}")
                 return
             
-            df = data['15M']
+            df = data['15m']
             if len(df) < 50:
                 print(f"{Fore.RED}⚠️ Insufficient data for indicators{Style.RESET_ALL}")
                 return
