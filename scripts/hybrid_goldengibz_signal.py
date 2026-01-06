@@ -665,21 +665,33 @@ class HybridGoldenGibzEA:
     def get_enhanced_timeframe_signal(self, tf_data, timestamp=None):
         """Get enhanced signal from a specific timeframe - MATCH BACKTEST LOGIC."""
         try:
+            print(f"   🔍 Analyzing timeframe data: {len(tf_data)} bars")
+            
             if timestamp is None:
                 # Use latest data
                 idx = -1
             else:
                 idx = tf_data.index.get_indexer([timestamp], method='nearest')[0]
             
-            if idx < 50 or (idx >= 0 and idx >= len(tf_data)):
+            # Check data sufficiency - allow idx=-1 for latest data
+            if len(tf_data) < 50:
+                print(f"   ❌ Insufficient data: len={len(tf_data)} < 50")
+                return 0, 0, {}
+            
+            if idx >= 0 and idx >= len(tf_data):
+                print(f"   ❌ Invalid index: idx={idx} >= len={len(tf_data)}")
                 return 0, 0, {}
             
             row = tf_data.iloc[idx]
+            print(f"   ✅ Got row data, analyzing indicators...")
             
             # Enhanced signal scoring - MATCH BACKTEST
             bullish_score = 0
             bearish_score = 0
             signal_quality = {}
+            
+            print(f"   🔍 EMA_Bullish: {row.get('EMA_Bullish', 'N/A')}, MACD_Bullish: {row.get('MACD_Bullish', 'N/A')}")
+            print(f"   🔍 Strong_Trend: {row.get('Strong_Trend', 'N/A')}, Stoch_Bullish: {row.get('Stoch_Bullish', 'N/A')}")
             
             # 1. Trend Direction (EMA) - Weight: 3
             if row.get('EMA_Bullish', False):
@@ -745,6 +757,7 @@ class HybridGoldenGibzEA:
                 signal_quality['volatility'] = 'high'
             
             # Determine signal
+            print(f"   📊 Bullish Score: {bullish_score}, Bearish Score: {bearish_score}")
             if bullish_score > bearish_score:
                 return 1, bullish_score - bearish_score, signal_quality
             elif bearish_score > bullish_score:
@@ -871,6 +884,9 @@ class HybridGoldenGibzEA:
                 tf_data = self.calculate_technical_indicators(data[tf_name])
                 signal, strength, quality = self.get_enhanced_timeframe_signal(tf_data)
                 weight = tf_weights.get(tf_name, 1)
+                
+                # Debug output to see what's happening
+                print(f"🔍 {tf_name}: Signal={signal}, Strength={strength:.2f}, Weight={weight}")
                 
                 timeframe_signals[tf_name] = {
                     'signal': signal,
