@@ -3,6 +3,29 @@
     "lot_size": 0.01,
     "max_positions": 3,
     "min_confidence": 0.65,
-    "signal_freq_s": 240,
-    "max_daily_trades": 10
+    "signal_frequency": 60,
+    "max_daily_trades": 10,
+    "max_daily_loss": 100.0,
+    "trading_hours": {
+        "start": 8,
+        "end": 17
+    },
+    "risk_per_trade": 2.0,
+    "use_dynamic_lots": false,
+    "dashboard_refresh": 5,
+    "show_indicators": true,
+    "show_positions": true,
+    "indicators": {
+        "ema_fast": 20,
+        "ema_slow": 50,
+        "rsi_period": 14,
+        "atr_period": 14,
+        "bb_period": 20,
+        "macd_fast": 12,
+        "macd_slow": 26,
+        "macd_signal": 9,
+        "adx_period": 14,
+        "stoch_k": 14,
+        "stoch_d": 3
+    }
 }

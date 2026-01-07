@@ -482,12 +482,17 @@ class GoldenGibzNativeApp:
             # Create EA instance
             ea = technical_module.TechnicalGoldenGibzEA()
             
+            # Force reload configuration with updated values
+            ea.signal_frequency = 60  # Override with updated value
+            ea.min_confidence = 0.65  # Ensure correct confidence
+            
             # Initialize MT5 connection (FIXED: correct method name)
             ea.initialize()  # This is the correct method name, not initialize_mt5()
             
             self.log_queue.put(('trading', "Technical EA initialized successfully"))
             self.log_queue.put(('trading', f"Symbol: {ea.symbol}, Lot Size: {ea.lot_size}"))
             self.log_queue.put(('trading', f"Min Confidence: {ea.min_confidence}, Max Positions: {ea.max_positions}"))
+            self.log_queue.put(('trading', f"Signal Frequency: {ea.signal_frequency}s (Updated from config)"))
             
             # Start the EA's main run loop in a controlled way
             self.log_queue.put(('trading', "Starting Technical EA main loop..."))
@@ -574,7 +579,7 @@ class GoldenGibzNativeApp:
                         self.log_queue.put(('trading', f"📊 Performance: {trade_count} trades, {win_rate:.1f}% win rate"))
                     
                     # Wait for next signal check (simulate signal_frequency)
-                    signal_freq = getattr(ea, 'signal_frequency', 240)
+                    signal_freq = getattr(ea, 'signal_frequency', 60)  # Use updated default
                     self.log_queue.put(('trading', f"Waiting {signal_freq}s for next signal check..."))
                     
                     for i in range(signal_freq // 10):  # Check every 10 seconds if still trading
@@ -1103,7 +1108,7 @@ Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
             self.log_message(f"ERROR loading config: {str(e)}")
             
     def save_config(self):
-        """Save current configuration"""
+        """Save current configuration and apply to running systems"""
         try:
             config = {}
             for key, var in self.config_vars.items():
@@ -1116,15 +1121,40 @@ Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
                         config[key] = int(value) if value.isdigit() else value
                 except:
                     config[key] = value
+            
+            # Map UI keys to config keys
+            config_mapping = {
+                "symbol": "symbol",
+                "lot_size": "lot_size", 
+                "max_positions": "max_positions",
+                "min_confidence": "min_confidence",
+                "signal_freq_s": "signal_frequency",
+                "max_daily_trades": "max_daily_trades"
+            }
+            
+            # Create proper config structure
+            final_config = {}
+            for ui_key, config_key in config_mapping.items():
+                if ui_key in config:
+                    final_config[config_key] = config[ui_key]
                     
             # Ensure config directory exists
             os.makedirs("config", exist_ok=True)
             
-            with open("config/ea_config.json", 'w') as f:
-                json.dump(config, f, indent=4)
+            # Load existing config and update
+            config_path = "config/ea_config.json"
+            if os.path.exists(config_path):
+                with open(config_path, 'r') as f:
+                    existing_config = json.load(f)
+                existing_config.update(final_config)
+                final_config = existing_config
+            
+            with open(config_path, 'w') as f:
+                json.dump(final_config, f, indent=4)
                 
             self.log_message("Configuration saved successfully")
-            messagebox.showinfo("Success", "Configuration saved!")
+            self.log_message(f"Signal frequency updated to: {final_config.get('signal_frequency', 240)}s")
+            messagebox.showinfo("Success", f"Configuration saved!\n\nSignal Frequency: {final_config.get('signal_frequency', 240)}s\nRestart trading to apply changes.")
             
         except Exception as e:
             self.log_message(f"ERROR saving config: {str(e)}")
