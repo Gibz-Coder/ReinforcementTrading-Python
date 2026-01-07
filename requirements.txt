@@ -32,5 +32,6 @@ joblib>=1.1.0
 
 # Golden-Gibz Professional EA
 # Python 3.8+ required
-# Standalone Python EA - No MT5 EA attachment needed
+# Native Desktop Application with tkinter (built-in)
 # Direct MT5 API integration with professional dashboard
+# MBR Bot-inspired compact interface design
