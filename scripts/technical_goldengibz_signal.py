@@ -599,20 +599,20 @@ class TechnicalGoldenGibzEA:
                 conditions['atr_pct'] = (atr / exec_row['Close']) * 100
             
             # Enhanced signal determination - TECHNICAL ONLY OPTIMIZED
-            min_strength = 3.0  # Original proven threshold
+            min_strength = 1.5  # Reduced from 3.0 to allow more signals in mixed market conditions
             
             if bull_score > bear_score and bull_score >= min_strength:
-                # Additional quality checks for bullish signals
+                # Additional quality checks for bullish signals - RELAXED CONDITIONS
                 if (conditions['session_active'] and 
-                    conditions['rsi'] < 75 and  # Not too overbought
-                    exec_row.get('Strong_Trend', False)):  # Strong trend required
+                    conditions['rsi'] < 80 and  # Not extremely overbought (was 75)
+                    exec_row.get('ADX', 0) > 20):  # Moderate trend required (was Strong_Trend > 25)
                     conditions['bull_signal'] = True
                     
             elif bear_score > bull_score and bear_score >= min_strength:
-                # Additional quality checks for bearish signals
+                # Additional quality checks for bearish signals - RELAXED CONDITIONS
                 if (conditions['session_active'] and 
-                    conditions['rsi'] > 25 and  # Not too oversold
-                    exec_row.get('Strong_Trend', False)):  # Strong trend required
+                    conditions['rsi'] > 20 and  # Not extremely oversold (was 25)
+                    exec_row.get('ADX', 0) > 20):  # Moderate trend required (was Strong_Trend > 25)
                     conditions['bear_signal'] = True
             
             return conditions

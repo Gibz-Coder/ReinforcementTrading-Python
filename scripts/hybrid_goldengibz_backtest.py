@@ -40,16 +40,32 @@ class HybridGoldenGibzBacktester:
         self.initial_balance = 500.0
         self.leverage = 300
         self.fixed_lot_size = 0.01  # Fixed lot size for realistic results
-        self.spread = 2.0
         self.commission = 0.0
         
+        # Symbol-specific optimizations based on actual broker spreads
+        if symbol.upper() == "EURUSD":
+            # EURUSD-specific parameters (optimized for forex)
+            self.spread = 1.6  # Actual broker spread: 1.6 pips
+            self.max_positions = 2  # Allow more positions for forex
+            self.risk_per_trade = 1.5  # Lower risk for forex volatility
+            self.min_confidence = 0.50  # Lower threshold for EURUSD hybrid
+            self.fixed_lot_size = 0.05  # Increased lot size for EURUSD (5x larger for meaningful P&L)
+        elif symbol.upper() == "XAUUSD":
+            # XAUUSD-specific parameters (original optimized)
+            self.spread = 2.3  # Actual broker spread: 2.3 points
+            self.max_positions = 1  # Conservative for gold
+            self.risk_per_trade = 2.0  # Higher risk tolerance for gold
+            self.min_confidence = 0.55  # Original hybrid confidence
+        else:
+            # Default parameters
+            self.spread = 2.0  # Default spread
+            self.max_positions = 1
+            self.risk_per_trade = 2.0
+            self.min_confidence = 0.55
+        
         # Risk management - REALISTIC
-        self.max_positions = 1  # Only 1 position at a time for better control
-        self.risk_per_trade = 2.0  # 2% of ORIGINAL balance, not growing balance
         self.rr_ratio = 1.0  # 1:1 risk-reward as requested
         
-        # Enhanced signal filtering parameters - FINAL OPTIMIZATION
-        self.min_confidence = 0.55  # FINAL reduction to maximize trade frequency
         self.trend_alignment_required = True  # Require multiple timeframes to align
         self.volatility_filter = True  # Avoid trading in extreme volatility
         self.session_filter = True  # Trade only during active sessions
@@ -249,7 +265,7 @@ class HybridGoldenGibzBacktester:
         timeframes = ['15m', '30m', '1h', '4h', '1d']
         
         for tf in timeframes:
-            filename = f"{data_path}/XAU_{tf}_data.csv"
+            filename = f"{data_path}/{self.symbol}/{self.symbol}_{tf}_data.csv"
             
             if os.path.exists(filename):
                 try:

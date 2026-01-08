@@ -1,37 +1,72 @@
-# Golden-Gibz Professional Python EA - Core Dependencies
+# Golden-Gibz Professional Python EA - Complete Dependencies
+# ============================================================
 
-# Core ML and RL Libraries
-numpy>=1.21.0
-pandas>=1.3.0
+# Core Python Libraries (Built-in)
+# tkinter - GUI framework (built-in with Python)
+# threading - Multi-threading support (built-in)
+# json - JSON handling (built-in)
+# os, sys - System utilities (built-in)
+# subprocess - Process management (built-in)
+# time - Time utilities (built-in)
+# datetime - Date/time handling (built-in)
+# queue - Thread-safe queues (built-in)
+# pathlib - Path handling (built-in)
+# warnings - Warning control (built-in)
+
+# Core Scientific Computing
+numpy>=1.21.0,<2.4.0
+pandas>=1.5.0,<2.4.0
+
+# Technical Analysis
+ta>=0.10.0
 pandas-ta>=0.3.14b
-torch>=1.11.0
-stable-baselines3>=1.6.0
-gymnasium>=0.26.0
 
-# Trading Integration
+# Machine Learning & Reinforcement Learning
+torch>=1.13.0,<2.10.0
+stable-baselines3>=2.0.0,<2.8.0
+gymnasium>=0.28.0,<1.3.0
+
+# Trading Platform Integration
 MetaTrader5>=5.0.37
 
-# Professional Dashboard
-colorama>=0.4.4
+# Data Visualization & Analysis
+matplotlib>=3.5.0,<3.11.0
+seaborn>=0.11.0,<0.14.0
+scikit-learn>=1.0.0,<1.9.0
 
-# Configuration Management
-pyyaml>=6.0
+# Configuration & Data Management
+PyYAML>=6.0,<7.0
 python-dateutil>=2.8.0
 
-# Data Analysis (Optional - for model training)
-matplotlib>=3.5.0
-scikit-learn>=1.0.0
+# Progress Bars & Rich Output
+tqdm>=4.62.0,<5.0.0
+colorama>=0.4.4,<0.5.0
 
-# System Utilities
-psutil>=5.8.0
-tqdm>=4.62.0
+# System Monitoring & Performance
+psutil>=5.8.0,<6.0.0
 
-# Performance Enhancements (Optional)
-numba>=0.56.0
-joblib>=1.1.0
+# Performance Enhancements
+numba>=0.56.0,<0.62.0
+joblib>=1.1.0,<1.6.0
 
-# Golden-Gibz Professional EA
-# Python 3.8+ required
-# Native Desktop Application with tkinter (built-in)
-# Direct MT5 API integration with professional dashboard
-# MBR Bot-inspired compact interface design
+# Training & Development Tools (Optional)
+tensorboard>=2.10.0,<2.21.0
+jupyter>=1.0.0
+notebook>=6.4.0
+rich>=12.0.0,<14.0.0
+
+# Network & HTTP
+requests>=2.25.0,<3.0.0
+urllib3>=1.26.0,<3.0.0
+
+# Additional Dependencies for Stability
+setuptools>=60.0.0
+wheel>=0.37.0
+pip>=21.0.0
+
+# System Requirements:
+# - Python 3.8+ (recommended: Python 3.9-3.11)
+# - Windows 10/11 (for MetaTrader5 integration)
+# - 8GB+ RAM (16GB recommended for model training)
+# - 2GB+ free disk space
+# - MetaTrader 5 terminal installed and configured

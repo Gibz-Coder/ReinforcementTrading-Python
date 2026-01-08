@@ -1,0 +1,570 @@
+{
+    "system_type": "pure_ai",
+    "symbol": "EURUSD",
+    "timestamp": "20260108_205959",
+    "parameters": {
+        "initial_balance": 500,
+        "months": "12",
+        "symbol": "EURUSD",
+        "min_confidence": 0.55
+    },
+    "results": {
+        "trades": [
+            {
+                "type": "buy",
+                "time": "2025-01-15 07:00:00",
+                "price": 1.02934,
+                "ai_confidence": 0.8258777260780334,
+                "signal_type": "pure_ai",
+                "balance_at_entry": 500.0,
+                "risk_percent": 10.0
+            },
+            {
+                "type": "close_take_profit",
+                "time": "2025-01-20 15:00:00",
+                "entry_price": 1.02934,
+                "exit_price": 1.03979,
+                "pnl_percent": 10.15213632036069,
+                "pnl_dollars": 50.76068160180345,
+                "balance": 550.7606816018034,
+                "signal_type": "pure_ai",
+                "position_size_multiplier": 10.0
+            },
+            {
+                "type": "buy",
+                "time": "2025-01-20 17:00:00",
+                "price": 1.04005,
+                "ai_confidence": 0.6477571129798889,
+                "signal_type": "pure_ai",
+                "balance_at_entry": 550.7606816018034,
+                "risk_percent": 10.0
+            },
+            {
+                "type": "close_take_profit",
+                "time": "2025-01-24 17:00:00",
+                "entry_price": 1.04005,
+                "exit_price": 1.05163,
+                "pnl_percent": 11.134080092303396,
+                "pnl_dollars": 61.32213540646089,
+                "balance": 612.0828170082643,
+                "signal_type": "pure_ai",
+                "position_size_multiplier": 10.0
+            },
+            {
+                "type": "buy",
+                "time": "2025-01-24 19:00:00",
+                "price": 1.05111,
+                "ai_confidence": 0.6249706745147705,
+                "signal_type": "pure_ai",
+                "balance_at_entry": 612.0828170082643,
+                "risk_percent": 10.0
+            },
+            {
+                "type": "close_stop_loss",
+                "time": "2025-01-29 11:00:00",
+                "entry_price": 1.05111,
+                "exit_price": 1.0404,
+                "pnl_percent": -10.189228529839882,
+                "pnl_dollars": -62.366517016853706,
+                "balance": 549.7162999914107,
+                "signal_type": "pure_ai",
+                "position_size_multiplier": 10.0
+            },
+            {
+                "type": "buy",
+                "time": "2025-01-29 12:00:00",
+                "price": 1.04036,
+                "ai_confidence": 0.6521918773651123,
+                "signal_type": "pure_ai",
+                "balance_at_entry": 549.7162999914107,
+                "risk_percent": 10.0
+            },
+            {
+                "type": "close_stop_loss",
+                "time": "2025-02-03 00:00:00",
+                "entry_price": 1.04036,
+                "exit_price": 1.02491,
+                "pnl_percent": -14.850628628551622,
+                "pnl_dollars": -81.63632622233915,
+                "balance": 468.0799737690715,
+                "signal_type": "pure_ai",
+                "position_size_multiplier": 10.0
+            },
+            {
+                "type": "buy",
+                "time": "2025-02-03 00:00:00",
+                "price": 1.02491,
+                "ai_confidence": 0.8420826196670532,
+                "signal_type": "pure_ai",
+                "balance_at_entry": 468.0799737690715,
+                "risk_percent": 10.0
+            },
+            {
+                "type": "close_take_profit",
+                "time": "2025-02-04 16:00:00",
+                "entry_price": 1.02491,
+                "exit_price": 1.03584,
+                "pnl_percent": 10.66435101618689,
+                "pnl_dollars": 49.91769143920931,
+                "balance": 517.9976652082808,
+                "signal_type": "pure_ai",
+                "position_size_multiplier": 10.0
+            },
+            {
+                "type": "buy",
+                "time": "2025-02-04 17:00:00",
+                "price": 1.03804,
+                "ai_confidence": 0.674505352973938,
+                "signal_type": "pure_ai",
+                "balance_at_entry": 517.9976652082808,
+                "risk_percent": 10.0
+            },
+            {
+                "type": "close_take_profit",
+                "time": "2025-02-14 15:00:00",
+                "entry_price": 1.03804,
+                "exit_price": 1.04884,
+                "pnl_percent": 10.404223343994374,
+                "pnl_dollars": 53.893634004945774,
+                "balance": 571.8912992132265,
+                "signal_type": "pure_ai",
+                "position_size_multiplier": 10.0
+            },
+            {
+                "type": "buy",
+                "time": "2025-02-14 16:00:00",
+                "price": 1.05089,
+                "ai_confidence": 0.6011552810668945,
+                "signal_type": "pure_ai",
+                "balance_at_entry": 571.8912992132265,
+                "risk_percent": 10.0
+            },
+            {
+                "type": "close_stop_loss",
+                "time": "2025-02-27 23:00:00",
+                "entry_price": 1.05089,
+                "exit_price": 1.03982,
+                "pnl_percent": -10.533928384512304,
+                "pnl_dollars": -60.24261989637826,
+                "balance": 511.64867931684824,
+                "signal_type": "pure_ai",
+                "position_size_multiplier": 10.0
+            },
+            {
+                "type": "buy",
+                "time": "2025-02-27 23:00:00",
+                "price": 1.03982,
+                "ai_confidence": 0.8033178448677063,
+                "signal_type": "pure_ai",
+                "balance_at_entry": 511.64867931684824,
+                "risk_percent": 10.0
+            },
+            {
+                "type": "close_take_profit",
+                "time": "2025-03-04 10:00:00",
+                "entry_price": 1.03982,
+                "exit_price": 1.05188,
+                "pnl_percent": 11.598161220211152,
+                "pnl_dollars": 59.34183870824921,
+                "balance": 570.9905180250975,
+                "signal_type": "pure_ai",
+                "position_size_multiplier": 10.0
+            },
+            {
+                "type": "buy",
+                "time": "2025-03-04 10:00:00",
+                "price": 1.05188,
+                "ai_confidence": 0.714557409286499,
+                "signal_type": "pure_ai",
+                "balance_at_entry": 570.9905180250975,
+                "risk_percent": 10.0
+            },
+            {
+                "type": "close_take_profit",
+                "time": "2025-03-04 23:00:00",
+                "entry_price": 1.05188,
+                "exit_price": 1.06263,
+                "pnl_percent": 10.219796935011633,
+                "pnl_dollars": 58.35407146033595,
+                "balance": 629.3445894854334,
+                "signal_type": "pure_ai",
+                "position_size_multiplier": 10.0
+            },
+            {
+                "type": "buy",
+                "time": "2025-03-05 00:00:00",
+                "price": 1.06188,
+                "ai_confidence": 0.7047991752624512,
+                "signal_type": "pure_ai",
+                "balance_at_entry": 629.3445894854334,
+                "risk_percent": 10.0
+            },
+            {
+                "type": "close_take_profit",
+                "time": "2025-03-05 16:00:00",
+                "entry_price": 1.06188,
+                "exit_price": 1.07685,
+                "pnl_percent": 14.097638151203668,
+                "pnl_dollars": 88.72272294983456,
+                "balance": 718.0673124352679,
+                "signal_type": "pure_ai",
+                "position_size_multiplier": 10.0
+            },
+            {
+                "type": "buy",
+                "time": "2025-03-06 09:00:00",
+                "price": 1.07994,
+                "ai_confidence": 0.7398754358291626,
+                "signal_type": "pure_ai",
+                "balance_at_entry": 718.0673124352679,
+                "risk_percent": 10.0
+            },
+            {
+                "type": "close_take_profit",
+                "time": "2025-03-11 11:00:00",
+                "entry_price": 1.07994,
+                "exit_price": 1.09171,
+                "pnl_percent": 10.89875363446123,
+                "pnl_dollars": 78.26038731191683,
+                "balance": 796.3276997471847,
+                "signal_type": "pure_ai",
+                "position_size_multiplier": 10.0
+            },
+            {
+                "type": "buy",
+                "time": "2025-03-12 00:00:00",
+                "price": 1.09106,
+                "ai_confidence": 0.6464437246322632,
+                "signal_type": "pure_ai",
+                "balance_at_entry": 796.3276997471847,
+                "risk_percent": 10.0
+            },
+            {
+                "type": "close_stop_loss",
+                "time": "2025-03-24 16:00:00",
+                "entry_price": 1.09106,
+                "exit_price": 1.07935,
+                "pnl_percent": -10.732681978992801,
+                "pnl_dollars": -85.467319524494,
+                "balance": 710.8603802226908,
+                "signal_type": "pure_ai",
+                "position_size_multiplier": 10.0
+            },
+            {
+                "type": "buy",
+                "time": "2025-03-25 08:00:00",
+                "price": 1.08033,
+                "ai_confidence": 0.6050058603286743,
+                "signal_type": "pure_ai",
+                "balance_at_entry": 710.8603802226908,
+                "risk_percent": 10.0
+            },
+            {
+                "type": "close_take_profit",
+                "time": "2025-04-03 04:00:00",
+                "entry_price": 1.08033,
+                "exit_price": 1.09135,
+                "pnl_percent": 10.200586857719427,
+                "pnl_dollars": 72.51193052173015,
+                "balance": 783.3723107444209,
+                "signal_type": "pure_ai",
+                "position_size_multiplier": 10.0
+            },
+            {
+                "type": "buy",
+                "time": "2025-04-03 10:00:00",
+                "price": 1.09706,
+                "ai_confidence": 0.6201602816581726,
+                "signal_type": "pure_ai",
+                "balance_at_entry": 783.3723107444209,
+                "risk_percent": 10.0
+            },
+            {
+                "type": "close_take_profit",
+                "time": "2025-04-03 14:00:00",
+                "entry_price": 1.09706,
+                "exit_price": 1.10879,
+                "pnl_percent": 10.692213734891453,
+                "pnl_dollars": 83.75984180475153,
+                "balance": 867.1321525491725,
+                "signal_type": "pure_ai",
+                "position_size_multiplier": 10.0
+            },
+            {
+                "type": "sell",
+                "time": "2025-04-03 22:00:00",
+                "price": 1.10274,
+                "ai_confidence": 0.6516345739364624,
+                "signal_type": "pure_ai",
+                "balance_at_entry": 867.1321525491725,
+                "risk_percent": 10.0
+            },
+            {
+                "type": "close_take_profit",
+                "time": "2025-04-07 00:00:00",
+                "entry_price": 1.10274,
+                "exit_price": 1.09149,
+                "pnl_percent": 10.201860819413444,
+                "pnl_dollars": 88.46361532345044,
+                "balance": 955.5957678726229,
+                "signal_type": "pure_ai",
+                "position_size_multiplier": 10.0
+            },
+            {
+                "type": "buy",
+                "time": "2025-04-07 00:00:00",
+                "price": 1.09149,
+                "ai_confidence": 0.7235658168792725,
+                "signal_type": "pure_ai",
+                "balance_at_entry": 955.5957678726229,
+                "risk_percent": 10.0
+            },
+            {
+                "type": "close_take_profit",
+                "time": "2025-04-09 07:00:00",
+                "entry_price": 1.09149,
+                "exit_price": 1.10684,
+                "pnl_percent": 14.063344602332569,
+                "pnl_dollars": 134.388725841233,
+                "balance": 1089.984493713856,
+                "signal_type": "pure_ai",
+                "position_size_multiplier": 10.0
+            },
+            {
+                "type": "buy",
+                "time": "2025-04-10 00:00:00",
+                "price": 1.09474,
+                "ai_confidence": 0.7045397162437439,
+                "signal_type": "pure_ai",
+                "balance_at_entry": 1089.984493713856,
+                "risk_percent": 10.0
+            },
+            {
+                "type": "close_take_profit",
+                "time": "2025-04-10 12:00:00",
+                "entry_price": 1.09474,
+                "exit_price": 1.10591,
+                "pnl_percent": 10.203335951915433,
+                "pnl_dollars": 111.21477971740927,
+                "balance": 1201.1992734312653,
+                "signal_type": "pure_ai",
+                "position_size_multiplier": 10.0
+            },
+            {
+                "type": "buy",
+                "time": "2025-04-11 11:00:00",
+                "price": 1.14275,
+                "ai_confidence": 0.6725581884384155,
+                "signal_type": "pure_ai",
+                "balance_at_entry": 1201.1992734312653,
+                "risk_percent": 10.0
+            },
+            {
+                "type": "close_stop_loss",
+                "time": "2025-04-11 19:00:00",
+                "entry_price": 1.14275,
+                "exit_price": 1.13058,
+                "pnl_percent": -10.649748413913818,
+                "pnl_dollars": -127.92470057019048,
+                "balance": 1073.2745728610748,
+                "signal_type": "pure_ai",
+                "position_size_multiplier": 10.0
+            },
+            {
+                "type": "buy",
+                "time": "2025-04-14 09:00:00",
+                "price": 1.14173,
+                "ai_confidence": 0.654617190361023,
+                "signal_type": "pure_ai",
+                "balance_at_entry": 1073.2745728610748,
+                "risk_percent": 10.0
+            },
+            {
+                "type": "close_stop_loss",
+                "time": "2025-04-15 18:00:00",
+                "entry_price": 1.14173,
+                "exit_price": 1.1289,
+                "pnl_percent": -11.237332819493135,
+                "pnl_dollars": -120.60743581939232,
+                "balance": 952.6671370416825,
+                "signal_type": "pure_ai",
+                "position_size_multiplier": 10.0
+            },
+            {
+                "type": "buy",
+                "time": "2025-04-21 16:00:00",
+                "price": 1.15191,
+                "ai_confidence": 0.6274901032447815,
+                "signal_type": "pure_ai",
+                "balance_at_entry": 952.6671370416825,
+                "risk_percent": 10.0
+            },
+            {
+                "type": "close_stop_loss",
+                "time": "2025-04-23 00:00:00",
+                "entry_price": 1.15191,
+                "exit_price": 1.13615,
+                "pnl_percent": -13.68162443246434,
+                "pnl_dollars": -130.34033978155338,
+                "balance": 822.3267972601291,
+                "signal_type": "pure_ai",
+                "position_size_multiplier": 10.0
+            },
+            {
+                "type": "buy",
+                "time": "2025-05-14 11:00:00",
+                "price": 1.12389,
+                "ai_confidence": 0.6180095672607422,
+                "signal_type": "pure_ai",
+                "balance_at_entry": 822.3267972601291,
+                "risk_percent": 10.0
+            },
+            {
+                "type": "close_take_profit",
+                "time": "2025-05-23 19:00:00",
+                "entry_price": 1.12389,
+                "exit_price": 1.13582,
+                "pnl_percent": 10.614917830036743,
+                "pnl_dollars": 87.28931382353555,
+                "balance": 909.6161110836646,
+                "signal_type": "pure_ai",
+                "position_size_multiplier": 10.0
+            },
+            {
+                "type": "buy",
+                "time": "2025-06-05 16:00:00",
+                "price": 1.14805,
+                "ai_confidence": 0.6069724559783936,
+                "signal_type": "pure_ai",
+                "balance_at_entry": 909.6161110836646,
+                "risk_percent": 10.0
+            },
+            {
+                "type": "close_take_profit",
+                "time": "2025-06-12 15:00:00",
+                "entry_price": 1.14805,
+                "exit_price": 1.16101,
+                "pnl_percent": 11.288706937851211,
+                "pnl_dollars": 102.68389703971403,
+                "balance": 1012.3000081233786,
+                "signal_type": "pure_ai",
+                "position_size_multiplier": 10.0
+            },
+            {
+                "type": "buy",
+                "time": "2025-06-23 00:00:00",
+                "price": 1.14728,
+                "ai_confidence": 0.6133183836936951,
+                "signal_type": "pure_ai",
+                "balance_at_entry": 1012.3000081233786,
+                "risk_percent": 10.0
+            },
+            {
+                "type": "close_take_profit",
+                "time": "2025-06-24 01:00:00",
+                "entry_price": 1.14728,
+                "exit_price": 1.15924,
+                "pnl_percent": 10.424656579039091,
+                "pnl_dollars": 105.52879939644703,
+                "balance": 1117.8288075198257,
+                "signal_type": "pure_ai",
+                "position_size_multiplier": 10.0
+            },
+            {
+                "type": "buy",
+                "time": "2025-06-26 16:00:00",
+                "price": 1.17169,
+                "ai_confidence": 0.6244601607322693,
+                "signal_type": "pure_ai",
+                "balance_at_entry": 1117.8288075198257,
+                "risk_percent": 10.0
+            },
+            {
+                "type": "close_stop_loss",
+                "time": "2025-07-15 19:00:00",
+                "entry_price": 1.17169,
+                "exit_price": 1.15963,
+                "pnl_percent": -10.292824893956558,
+                "pnl_dollars": -115.05616177221835,
+                "balance": 1002.7726457476073,
+                "signal_type": "pure_ai",
+                "position_size_multiplier": 10.0
+            },
+            {
+                "type": "buy",
+                "time": "2025-10-16 17:00:00",
+                "price": 1.16771,
+                "ai_confidence": 0.6004049777984619,
+                "signal_type": "pure_ai",
+                "balance_at_entry": 1002.7726457476073,
+                "risk_percent": 10.0
+            },
+            {
+                "type": "close_stop_loss",
+                "time": "2025-10-30 15:00:00",
+                "entry_price": 1.16771,
+                "exit_price": 1.15553,
+                "pnl_percent": -10.430671999040925,
+                "pnl_dollars": -104.59592557403752,
+                "balance": 898.1767201735697,
+                "signal_type": "pure_ai",
+                "position_size_multiplier": 10.0
+            },
+            {
+                "type": "buy",
+                "time": "2025-10-31 14:00:00",
+                "price": 1.15668,
+                "ai_confidence": 0.6430507302284241,
+                "signal_type": "pure_ai",
+                "balance_at_entry": 898.1767201735697,
+                "risk_percent": 10.0
+            },
+            {
+                "type": "close_take_profit",
+                "time": "2025-12-10 22:00:00",
+                "entry_price": 1.15668,
+                "exit_price": 1.16939,
+                "pnl_percent": 10.988345955666217,
+                "pnl_dollars": 98.69476530592793,
+                "balance": 996.8714854794977,
+                "signal_type": "pure_ai",
+                "position_size_multiplier": 10.0
+            }
+        ],
+        "final_balance": 996.8714854794977,
+        "total_return": 99.37429709589954,
+        "win_rate": 65.38461538461539,
+        "total_trades": 26,
+        "ai_stats": {
+            "ai_signals": 1978,
+            "ai_predictions": 12178,
+            "pure_ai_mode": true,
+            "model_loaded": true,
+            "ai_accuracy": 16.242404335687304
+        },
+        "signal_stats": {
+            "total_signals": 1978,
+            "filter_rate": 0.0,
+            "pure_ai_signals": 1978,
+            "signals_generated": 1978
+        },
+        "winning_trades": 17,
+        "losing_trades": 9,
+        "start_date": "2025-01-13",
+        "end_date": "2026-01-07",
+        "backtest_period": {
+            "start": "2025-01-13 21:00:00",
+            "end": "2026-01-07 23:00:00",
+            "duration_days": 359
+        }
+    },
+    "summary": {
+        "total_trades": 52,
+        "final_balance": 996.8714854794977,
+        "total_return": 99.37429709589954,
+        "win_rate": 65.38461538461539,
+        "max_drawdown": 0,
+        "sharpe_ratio": 0,
+        "profit_factor": 0
+    }
+}

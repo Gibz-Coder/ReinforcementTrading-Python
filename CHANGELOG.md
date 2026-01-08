@@ -100,7 +100,7 @@
 - **IMPROVED**: Network architecture [256, 128] with ReLU activation
 
 ### 📡 **Signal Generation System**
-- **NEW**: `golden_gibz_signal_generator.py` - Real-time signal generation
+- **NEW**: Real-time signal generation via native desktop app
 - **NEW**: JSON-based signal communication protocol
 - **NEW**: Live MT5 data integration with multiple timeframes
 - **NEW**: Session filtering (London/NY overlap only)
@@ -131,9 +131,9 @@
 ```
 NEW STRUCTURE:
 ├── 🧠 scripts/
-│   ├── train_golden_gibz.py              # NEW: Advanced training
-│   ├── golden_gibz_signal_generator.py   # NEW: Signal generation
-│   └── train_simple_trend_rider.py       # LEGACY: Kept for reference
+│   ├── technical_goldengibz_signal.py     # Technical analysis signals
+│   ├── hybrid_goldengibz_signal.py        # AI-enhanced signals
+│   └── technical_goldengibz_backtest.py   # Backtesting engine
 ├── 🤖 mt5_ea/
 │   ├── GoldenGibzEA.mq5                  # NEW: Advanced EA
 │   └── signals.json                       # NEW: Signal communication

@@ -1,0 +1,105 @@
+{
+    "symbol": "XAUUSD",
+    "model_type": "Golden-Gibz PPO",
+    "trained_for": "XAUUSD Trading",
+    "timesteps": 1000000,
+    "win_rate": 67.2720623466759,
+    "annual_return": 17,
+    "final_reward": 0,
+    "training_date": "20260108_191341",
+    "data_period": {
+        "start_date": "Unknown",
+        "end_date": "Unknown",
+        "total_bars": 0
+    },
+    "technical_indicators": [
+        "EMA20",
+        "EMA50",
+        "RSI",
+        "ATR",
+        "Bollinger Bands",
+        "MACD",
+        "ADX",
+        "Stochastic",
+        "Williams %R",
+        "CCI"
+    ],
+    "config": {
+        "model": {
+            "algorithm": "PPO",
+            "policy": "MlpPolicy",
+            "learning_rate": 0.0002,
+            "n_steps": 4096,
+            "batch_size": 128,
+            "n_epochs": 15,
+            "gamma": 0.995,
+            "gae_lambda": 0.98,
+            "clip_range": 0.15,
+            "clip_range_vf": 0.15,
+            "ent_coef": 0.05,
+            "vf_coef": 0.5,
+            "policy_kwargs": {
+                "net_arch": {
+                    "pi": [
+                        512,
+                        512,
+                        256,
+                        128
+                    ],
+                    "vf": [
+                        512,
+                        512,
+                        256,
+                        128
+                    ]
+                },
+                "activation_fn": "relu",
+                "ortho_init": false,
+                "log_std_init": -2.0
+            }
+        },
+        "environment": {
+            "window_size": 30,
+            "initial_balance": 10000.0,
+            "max_trades_per_day": 5,
+            "spread_pips": 1.5,
+            "slippage_pips": 0.5
+        },
+        "training": {
+            "total_timesteps": 1000000,
+            "save_freq": 50000,
+            "eval_freq": 25000,
+            "n_envs": 1,
+            "use_curriculum": true,
+            "use_walk_forward": false,
+            "use_lstm": false
+        },
+        "ultra_aggressive": {
+            "max_trades_per_day": 2,
+            "min_confidence": 0.85,
+            "min_regime_strength": 1.5,
+            "max_volatility": 0.5,
+            "required_confirmations": 4,
+            "reward_system": {
+                "win_bonus": 20.0,
+                "loss_penalty": -25.0,
+                "confidence_multiplier": 3.0,
+                "regime_alignment_bonus": 5.0,
+                "overtrading_penalty": -10.0,
+                "drawdown_penalty_threshold": 0.1
+            }
+        },
+        "data": {
+            "normalize": true,
+            "train_split": 0.8,
+            "validation_split": 0.1,
+            "test_split": 0.1
+        },
+        "logging": {
+            "tensorboard": true,
+            "log_level": "INFO",
+            "save_trade_history": true,
+            "save_equity_curve": true
+        }
+    }
+}

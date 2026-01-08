@@ -1,0 +1,38 @@
+{
+    "symbol": "EURUSD",
+    "lot_size": 0.05,
+    "max_positions": 2,
+    "min_confidence": 0.5,
+    "signal_frequency": 240,
+    "max_daily_trades": 15,
+    "max_daily_loss": 150.0,
+    "trading_hours": {
+        "start": 0,
+        "end": 23
+    },
+    "risk_per_trade": 1.5,
+    "use_dynamic_lots": false,
+    "dashboard_refresh": 5,
+    "show_indicators": true,
+    "show_positions": true,
+    "broker_spread": 1.6,
+    "spread_multiplier": 0.0001,
+    "pnl_multiplier": 100000,
+    "stop_loss_pips": 15,
+    "take_profit_pips": 15,
+    "indicators": {
+        "ema_fast": 20,
+        "ema_slow": 50,
+        "rsi_period": 14,
+        "atr_period": 14,
+        "bb_period": 20,
+        "macd_fast": 12,
+        "macd_slow": 26,
+        "macd_signal": 9,
+        "adx_period": 14,
+        "stoch_k": 14,
+        "stoch_d": 3
+    },
+    "model_path": "models/production/golden_gibz_eurusd_wr60_ret+10_20260108_145955.zip",
+    "signal_type": "HYBRID_AI_ENHANCED"
+}
