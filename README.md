@@ -4,11 +4,11 @@
 
 Golden-Gibz is a **battle-tested Python EA** with **100% proven win rate** over 160 trades across 3 years of market data. Optimized for **1:300 leverage** and ready for live trading.
 
-**🚀 System Status**: ✅ **LIVE TRADING READY**
-- **Proven Performance**: 100% win rate, 5,630% average returns
-- **Risk Optimized**: Advanced stop-loss and position management
-- **Leverage Ready**: Fully tested with 1:300 leverage
-- **Market Tested**: Validated across bull, bear, and sideways markets
+**🚀 System Status**: ✅ **NATIVE DESKTOP APPLICATION READY**
+- **Native App**: Professional desktop interface with multi-tab system
+- **UI/UX**: Modern dark theme with Microsoft-inspired styling  
+- **Integration**: Synchronized MT5 connection across all interface elements
+- **Performance**: Optimized native Windows application with real-time updates
 
 ## 🏆 **Proven Performance**
 
@@ -20,47 +20,57 @@ Golden-Gibz is a **battle-tested Python EA** with **100% proven win rate** over 
 
 ## 🚀 **Quick Start**
 
-### **1. Install & Run**
+### **1. Launch Native Desktop Application**
 ```bash
-pip install -r requirements.txt
-python golden_gibz_python_ea.py
+# Windows (Recommended)
+Golden_Gibz.bat
+
+# Direct Python execution
+python golden_gibz_native_app.py
 ```
 
-### **2. Professional Launcher**
-```bash
-python launch_golden_gibz_pro.py
-```
+### **2. Professional Interface**
+- **📊 Dashboard**: Real-time system monitoring
+- **📈 Trading**: Live MT5 trading controls  
+- **🧪 Backtest**: Strategy testing interface
+- **📊 Data**: Historical data management
+- **⚙️ Config**: Parameter configuration
+- **🤖 Model**: AI training management
 
-## ✨ **Live Trading Features**
+## ✨ **Native Desktop Application Features**
 
-### 🎨 **Real-Time Dashboard**
-- Live account balance and P&L
-- Active positions with real-time updates
-- AI signal confidence scoring
-- Risk management metrics
+### 🖥️ **Professional Interface**
+- **Multi-tab system** with intuitive navigation
+- **Dark theme** with Microsoft-inspired styling
+- **Real-time updates** with live status monitoring
+- **Always-on-top** window for trading workflow
+- **Native Windows** appearance and performance
 
-### 🛡️ **Advanced Risk Management**
-- Automatic stop losses (2x ATR)
-- Position size limits
-- Daily loss limits
-- Leverage-optimized sizing
+### 🔌 **Synchronized MT5 Integration**
+- **Unified connection** status across all tabs
+- **Real-time indicators** with color-coded status
+- **Professional logging** with timestamps and categories
+- **Error handling** with user-friendly feedback
+- **Background processing** for non-blocking operations
 
-### ⚙️ **Professional Configuration**
-- JSON-based settings in `config/ea_config.json`
-- Hot-reload configuration changes
-- Multiple risk profiles
-- Customizable trading hours
+### 📊 **Advanced Dashboard**
+- Live system status with automatic updates
+- Connection monitoring with visual indicators
+- Quick action buttons for common tasks
+- Professional color-coded logging system
+- Real-time performance metrics display
 
 ## 📊 **System Architecture**
 
 ```
-Golden-Gibz Live Trading System
-├── 🎯 golden_gibz_python_ea.py     # Main Live Trading EA
-├── 🚀 launch_golden_gibz_pro.py    # Professional Launcher  
-├── ⚙️ config/ea_config.json        # Trading Configuration
-├── 🏆 models/production/           # Proven AI Models (100% WR)
-├── 📊 scripts/                     # Signal Generation
-└── 📋 logs/                        # Trading Logs
+Golden-Gibz Native Desktop Application
+├── 🖥️ golden_gibz_native_app.py      # Main Native Desktop Application
+├── 🚀 Golden_Gibz.bat               # Windows Launcher Script
+├── ⚙️ config/ea_config.json         # Trading Configuration
+├── 🏆 models/production/            # Proven AI Models (100% WR)
+├── 📊 scripts/                      # Signal Generation Scripts
+├── 🤖 mt5_ea/                       # MetaTrader 5 Expert Advisors
+└── 📋 logs/                         # System Logs and Analytics
 ```
 
 ## 🎯 **Configuration**

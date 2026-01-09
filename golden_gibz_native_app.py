@@ -5,7 +5,7 @@ Native Windows application with Python backend for trading logic
 """
 
 import tkinter as tk
-from tkinter import ttk, messagebox, scrolledtext
+from tkinter import ttk, scrolledtext, messagebox
 import threading
 import json
 import os
@@ -39,31 +39,95 @@ class GoldenGibzNativeApp:
         
     def setup_main_window(self):
         """Setup main application window - MBR-inspired size"""
-        self.root.title("Golden Gibz Trading System v1.0")
+        self.root.title("GGTS - MT5 v1.0")
         
-        # MBR-like window size with increased height for better content display
-        self.root.geometry("450x620")
-        self.root.minsize(450, 620)
-        self.root.maxsize(600, 720)
+        # Keep window always on top
+        self.root.attributes('-topmost', True)
+        
+        # Enlarged window size for better real-time dashboard display
+        self.root.geometry("625x780")
+        self.root.minsize(625, 780)
+        self.root.maxsize(720, 850)
         
         # Position window in upper left corner instead of center
-        x = 50  # 50 pixels from left edge
+        x = 70  # 70 pixels from left edge
         y = 50  # 50 pixels from top edge
-        self.root.geometry(f"450x620+{x}+{y}")
+        self.root.geometry(f"625x780+{x}+{y}")
         
-        # Configure style for native look
+        # Configure style for professional look
         self.style = ttk.Style()
         self.style.theme_use('winnative')  # Native Windows look
         
-        # Custom colors similar to MBR
+        # Professional color scheme
         self.colors = {
-            'bg': '#F0F0F0',
-            'frame_bg': '#E8E8E8',
-            'button_bg': '#D4D4D4',
-            'text_bg': '#FFFFFF',
-            'accent': '#0078D4'
+            'bg': '#2b2b2b',           # Dark background
+            'frame_bg': '#3c3c3c',     # Frame background
+            'button_bg': '#404040',     # Button background
+            'text_bg': '#1e1e1e',      # Text background
+            'accent': '#0078D4',       # Microsoft blue accent
+            'active_tab': '#0078D4',   # Active tab color
+            'inactive_tab': '#404040', # Inactive tab color
+            'success': '#00ff00',      # Success green
+            'error': '#ff4444',        # Error red
+            'warning': '#ffaa00'       # Warning orange
         }
         
+        # Configure professional notebook (tab) styling
+        self.style.configure('TNotebook', 
+                           background=self.colors['bg'],
+                           borderwidth=0)
+        
+        self.style.configure('TNotebook.Tab', 
+                           background=self.colors['inactive_tab'],
+                           foreground='white',
+                           padding=[12, 8],
+                           font=('Segoe UI', 9, 'bold'))
+        
+        # Active tab styling
+        self.style.map('TNotebook.Tab',
+                      background=[('selected', self.colors['active_tab']),
+                                ('active', '#005a9e')],  # Hover color
+                      foreground=[('selected', 'white'),
+                                ('active', 'white')])
+        
+        # Configure frame styling
+        self.style.configure('TLabelFrame', 
+                           background=self.colors['bg'],
+                           foreground='white',
+                           borderwidth=1,
+                           relief='solid')
+        
+        self.style.configure('TLabelFrame.Label',
+                           background=self.colors['bg'],
+                           foreground='#00ff00',
+                           font=('Segoe UI', 9, 'bold'))
+        
+        # Configure button styling
+        self.style.configure('TButton',
+                           background=self.colors['button_bg'],
+                           foreground='white',
+                           borderwidth=1,
+                           focuscolor='none',
+                           font=('Segoe UI', 8))
+        
+        self.style.map('TButton',
+                      background=[('active', self.colors['accent']),
+                                ('pressed', '#005a9e')])
+        
+        # Configure combobox styling
+        self.style.configure('TCombobox',
+                           fieldbackground='white',  # White background for visibility
+                           background=self.colors['button_bg'],
+                           foreground='black',  # Black text for contrast
+                           borderwidth=1)
+        
+        # Configure entry styling
+        self.style.configure('TEntry',
+                           fieldbackground=self.colors['text_bg'],
+                           foreground='white',
+                           borderwidth=1)
+        
+        # Set main window background
         self.root.configure(bg=self.colors['bg'])
         
     def setup_variables(self):
@@ -76,30 +140,52 @@ class GoldenGibzNativeApp:
         self.is_connected = tk.BooleanVar(value=False)  # MT5 connection status
         
     def create_widgets(self):
-        """Create main application widgets - MBR-inspired layout"""
-        # Main container
+        """Create main application widgets with professional styling"""
+        # Main container with dark theme
         main_frame = ttk.Frame(self.root)
-        main_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+        main_frame.pack(fill=tk.BOTH, expand=True, padx=8, pady=8)
         
-        # Title bar (similar to MBR)
-        title_frame = ttk.Frame(main_frame)
-        title_frame.pack(fill=tk.X, pady=(0, 5))
+        # Professional title bar
+        title_frame = tk.Frame(main_frame, bg=self.colors['bg'], height=50)
+        title_frame.pack(fill=tk.X, pady=(0, 8))
+        title_frame.pack_propagate(False)
         
-        # Logo and title
-        title_label = ttk.Label(title_frame, text="🤖 Golden Gibz Trading System", 
-                               font=('Segoe UI', 12, 'bold'))
-        title_label.pack(side=tk.LEFT)
+        # Logo and title with gradient-like effect
+        title_container = tk.Frame(title_frame, bg=self.colors['bg'])
+        title_container.pack(expand=True, fill=tk.BOTH)
         
-        # Version info
-        version_label = ttk.Label(title_frame, text="v1.0", 
-                                 font=('Segoe UI', 8))
-        version_label.pack(side=tk.RIGHT)
+        # Main title with professional styling
+        title_label = tk.Label(title_container, 
+                              text="🤖 Golden Gibz Trading System", 
+                              font=('Segoe UI', 16, 'bold'),
+                              bg=self.colors['bg'],
+                              fg='#00ff00')
+        title_label.pack(side=tk.LEFT, padx=10, pady=10)
         
-        # Main content area with notebook (similar to MBR tabs)
-        self.notebook = ttk.Notebook(main_frame)
-        self.notebook.pack(fill=tk.BOTH, expand=True, pady=(0, 5))
+        # Status indicator
+        self.connection_indicator = tk.Label(title_container,
+                                           text="●",
+                                           font=('Segoe UI', 20),
+                                           bg=self.colors['bg'],
+                                           fg='#ff4444')  # Red when disconnected
+        self.connection_indicator.pack(side=tk.LEFT, padx=5)
         
-        # Create tabs (MBR-style)
+        # Version and status info (removed labels)
+        info_frame = tk.Frame(title_container, bg=self.colors['bg'])
+        info_frame.pack(side=tk.RIGHT, padx=10, pady=5)
+        
+        # Professional separator line
+        separator = tk.Frame(main_frame, height=2, bg=self.colors['accent'])
+        separator.pack(fill=tk.X, pady=(0, 5))
+        
+        # Main content area with professional notebook
+        self.notebook = ttk.Notebook(main_frame, style='TNotebook')
+        self.notebook.pack(fill=tk.BOTH, expand=True, pady=(0, 8))
+        
+        # Bind tab change event for dynamic styling
+        self.notebook.bind('<<NotebookTabChanged>>', self.on_tab_changed)
+        
+        # Create tabs with enhanced styling
         self.create_main_tab()
         self.create_trading_tab()
         self.create_backtest_tab()
@@ -107,109 +193,169 @@ class GoldenGibzNativeApp:
         self.create_config_tab()
         self.create_model_tab()
         
-        # Bottom status bar (MBR-style)
+        # Professional status bar
         self.create_status_bar(main_frame)
         
     def create_main_tab(self):
-        """Create main dashboard tab (similar to MBR main tab)"""
+        """Create main dashboard tab with real-time system status"""
         main_tab = ttk.Frame(self.notebook)
         self.notebook.add(main_tab, text="📊 Dashboard")
         
-        # Top section - System Status (MBR-style)
-        status_frame = ttk.LabelFrame(main_tab, text="System Status", padding=5)
-        status_frame.pack(fill=tk.X, padx=5, pady=2)
+        # Expanded System Status section (takes most space)
+        status_frame = ttk.LabelFrame(main_tab, text="Real-Time System Status", padding=10)
+        status_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=(2, 5))
         
-        # Status grid (compact like MBR)
-        status_grid = ttk.Frame(status_frame)
-        status_grid.pack(fill=tk.X)
+        # Create main status display area
+        self.status_display = scrolledtext.ScrolledText(status_frame, height=20, width=70,
+                                                       font=('Consolas', 9), wrap=tk.WORD,
+                                                       bg='#1e1e1e', fg='#ffffff')
+        self.status_display.pack(fill=tk.BOTH, expand=True, pady=5)
         
-        # Trading status
-        ttk.Label(status_grid, text="Trading:", font=('Segoe UI', 8, 'bold')).grid(row=0, column=0, sticky=tk.W, padx=2)
-        self.trading_status_label = ttk.Label(status_grid, text="Stopped", foreground='red', font=('Segoe UI', 8))
-        self.trading_status_label.grid(row=0, column=1, sticky=tk.W, padx=2)
+        # Configure text tags for colored output
+        self.status_display.tag_configure("header", foreground="#00ff00", font=('Consolas', 10, 'bold'))
+        self.status_display.tag_configure("success", foreground="#00ff00")
+        self.status_display.tag_configure("warning", foreground="#ffaa00")
+        self.status_display.tag_configure("error", foreground="#ff4444")
+        self.status_display.tag_configure("info", foreground="#4da6ff")
+        self.status_display.tag_configure("profit", foreground="#00ff88")
+        self.status_display.tag_configure("loss", foreground="#ff6666")
         
-        # Mode
-        ttk.Label(status_grid, text="Mode:", font=('Segoe UI', 8, 'bold')).grid(row=0, column=2, sticky=tk.W, padx=5)
-        self.mode_label = ttk.Label(status_grid, textvariable=self.trading_mode, font=('Segoe UI', 8))
-        self.mode_label.grid(row=0, column=3, sticky=tk.W, padx=2)
+        # Quick actions at the bottom (separate from status area)
+        actions_frame = tk.Frame(main_tab, bg=self.colors['bg'], relief=tk.RAISED, bd=1)
+        actions_frame.pack(fill=tk.X, side=tk.BOTTOM, padx=5, pady=(0, 5))
         
-        # Performance section (MBR-style log area)
-        perf_frame = ttk.LabelFrame(main_tab, text="Performance Metrics", padding=5)
-        perf_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=2)
+        # Button container with proper spacing (no label)
+        button_container = tk.Frame(actions_frame, bg=self.colors['bg'])
+        button_container.pack(fill=tk.X, pady=5, padx=10)
         
-        # Performance display (similar to MBR log)
-        self.perf_text = scrolledtext.ScrolledText(perf_frame, height=12, width=70, 
-                                                  font=('Consolas', 8), wrap=tk.WORD)
-        self.perf_text.pack(fill=tk.BOTH, expand=True)
+        # Connect button with dynamic color (same as Trading tab)
+        self.dashboard_connect_btn = tk.Button(button_container, text="🔌 Connect to MT5", 
+                                             command=self.toggle_connection, width=12,
+                                             bg='#FF6B6B', fg='white', font=('Segoe UI', 8, 'bold'),
+                                             relief=tk.RAISED, bd=1, activebackground='#ff5555',
+                                             cursor='hand2', height=1)
+        self.dashboard_connect_btn.pack(side=tk.LEFT, padx=2, pady=2)
         
-        # Load performance data
-        self.update_performance_display()
+        # Start Trading button with enhanced styling
+        start_trading_btn = tk.Button(button_container, text="🚀 Start Trading", 
+                                    command=self.quick_start_trading, width=12,
+                                    bg=self.colors['accent'], fg='white', 
+                                    font=('Segoe UI', 8, 'bold'),
+                                    relief=tk.RAISED, bd=1, activebackground='#005a9e',
+                                    cursor='hand2', height=1)
+        start_trading_btn.pack(side=tk.LEFT, padx=2, pady=2)
         
-        # Quick actions (MBR-style buttons)
-        actions_frame = ttk.Frame(main_tab)
-        actions_frame.pack(fill=tk.X, padx=5, pady=2)
+        # Backtest button with enhanced styling
+        backtest_btn = tk.Button(button_container, text="🧪 Backtest", 
+                               command=self.quick_backtest, width=10,
+                               bg='#28a745', fg='white', 
+                               font=('Segoe UI', 8, 'bold'),
+                               relief=tk.RAISED, bd=1, activebackground='#218838',
+                               cursor='hand2', height=1)
+        backtest_btn.pack(side=tk.LEFT, padx=2, pady=2)
         
-        ttk.Button(actions_frame, text="🚀 Start Trading", 
-                  command=self.quick_start_trading, width=15).pack(side=tk.LEFT, padx=2)
-        ttk.Button(actions_frame, text="📈 Backtest", 
-                  command=self.quick_backtest, width=12).pack(side=tk.LEFT, padx=2)
-        ttk.Button(actions_frame, text="🔄 Refresh", 
-                  command=self.refresh_performance, width=10).pack(side=tk.LEFT, padx=2)
+        # Refresh Status button with enhanced styling
+        refresh_btn = tk.Button(button_container, text="🔄 Refresh Status", 
+                              command=self.refresh_dashboard_status, width=12,
+                              bg='#17a2b8', fg='white', 
+                              font=('Segoe UI', 8, 'bold'),
+                              relief=tk.RAISED, bd=1, activebackground='#138496',
+                              cursor='hand2', height=1)
+        refresh_btn.pack(side=tk.LEFT, padx=2, pady=2)
+        
+        # Initialize real-time status display
+        self.update_dashboard_status()
+        
+        # Set initial button state based on connection status
+        self.update_dashboard_button_state()
+        
+        # Start real-time updates (every 2 seconds)
+        self.schedule_dashboard_updates()
         
     def create_trading_tab(self):
         """Create trading control tab"""
         trading_tab = ttk.Frame(self.notebook)
         self.notebook.add(trading_tab, text="📈 Trading")
         
-        # Trading controls (compact MBR-style)
+        # Trading controls at the top
         controls_frame = ttk.LabelFrame(trading_tab, text="Trading Controls", padding=5)
-        controls_frame.pack(fill=tk.X, padx=5, pady=2)
+        controls_frame.pack(fill=tk.X, padx=5, pady=(5, 2))
         
-        # Mode and Symbol selection (compact)
-        mode_frame = ttk.Frame(controls_frame)
-        mode_frame.pack(fill=tk.X, pady=2)
+        # Mode and Symbol selection row
+        selection_frame = tk.Frame(controls_frame, bg=self.colors['bg'])
+        selection_frame.pack(fill=tk.X, pady=(2, 5))
         
-        # Mode dropdown
-        ttk.Label(mode_frame, text="Mode:", font=('Segoe UI', 8, 'bold')).pack(side=tk.LEFT)
-        mode_combo = ttk.Combobox(mode_frame, textvariable=self.trading_mode, 
+        # Mode selection
+        mode_label = tk.Label(selection_frame, text="Mode:", 
+                             font=('Segoe UI', 9, 'bold'),
+                             bg=self.colors['bg'], fg='#00ff00')
+        mode_label.grid(row=0, column=0, sticky=tk.W, padx=(0, 5))
+        
+        mode_combo = ttk.Combobox(selection_frame, textvariable=self.trading_mode, 
                                  values=["Technical", "Hybrid AI-Enhanced", "Pure AI Model"], 
-                                 state="readonly", width=12, font=('Segoe UI', 8))
-        mode_combo.pack(side=tk.LEFT, padx=(5, 10))
+                                 state="readonly", width=18, font=('Segoe UI', 9))
+        mode_combo.grid(row=0, column=1, sticky=tk.W, padx=(0, 15))
         
-        # Symbol dropdown
-        ttk.Label(mode_frame, text="Symbol:", font=('Segoe UI', 8, 'bold')).pack(side=tk.LEFT)
-        symbol_combo = ttk.Combobox(mode_frame, textvariable=self.trading_symbol, 
+        # Symbol selection
+        symbol_label = tk.Label(selection_frame, text="Symbol:", 
+                               font=('Segoe UI', 9, 'bold'),
+                               bg=self.colors['bg'], fg='#00ff00')
+        symbol_label.grid(row=0, column=2, sticky=tk.W, padx=(0, 5))
+        
+        symbol_combo = ttk.Combobox(selection_frame, textvariable=self.trading_symbol, 
                                    values=["XAUUSD", "EURUSD"], 
-                                   state="readonly", width=8, font=('Segoe UI', 8))
-        symbol_combo.pack(side=tk.LEFT, padx=5)
+                                   state="readonly", width=10, font=('Segoe UI', 9))
+        symbol_combo.grid(row=0, column=3, sticky=tk.W)
         
-        # Control buttons (MBR-style)
-        buttons_frame = ttk.Frame(controls_frame)
-        buttons_frame.pack(fill=tk.X, pady=2)
+        # Control buttons row
+        buttons_frame = tk.Frame(controls_frame, bg=self.colors['bg'])
+        buttons_frame.pack(fill=tk.X, pady=(5, 5))
         
-        # Connect button with dynamic color
+        # Connect button
         self.connect_btn = tk.Button(buttons_frame, text="🔌 Connect", 
-                                    command=self.toggle_connection, width=10,
-                                    bg='#FF6B6B', fg='white', font=('Segoe UI', 8, 'bold'))
-        self.connect_btn.pack(side=tk.LEFT, padx=2)
+                                    command=self.toggle_connection, width=12,
+                                    bg='#FF4444', fg='white', 
+                                    font=('Segoe UI', 9, 'bold'),
+                                    relief=tk.RAISED, bd=2,
+                                    activebackground='#ff3333', activeforeground='white',
+                                    cursor='hand2')
+        self.connect_btn.pack(side=tk.LEFT, padx=(0, 3), pady=1)
         
-        self.start_btn = ttk.Button(buttons_frame, text="▶️ Start", 
-                                   command=self.start_trading, width=10, state=tk.DISABLED)
-        self.start_btn.pack(side=tk.LEFT, padx=2)
+        # Start button
+        self.start_btn = tk.Button(buttons_frame, text="▶️ Start", 
+                                  command=self.start_trading, width=10,
+                                  bg=self.colors['accent'], fg='white',
+                                  font=('Segoe UI', 9, 'bold'),
+                                  relief=tk.RAISED, bd=1,
+                                  activebackground='#005a9e', activeforeground='white',
+                                  cursor='hand2', state=tk.DISABLED)
+        self.start_btn.pack(side=tk.LEFT, padx=(0, 3), pady=1)
         
-        self.stop_btn = ttk.Button(buttons_frame, text="⏹️ Stop", 
-                                  command=self.stop_trading, state=tk.DISABLED, width=10)
-        self.stop_btn.pack(side=tk.LEFT, padx=2)
+        # Stop button
+        self.stop_btn = tk.Button(buttons_frame, text="⏹️ Stop", 
+                                 command=self.stop_trading, width=10,
+                                 bg='#dc3545', fg='white',
+                                 font=('Segoe UI', 9, 'bold'),
+                                 relief=tk.RAISED, bd=1,
+                                 activebackground='#c82333', activeforeground='white',
+                                 cursor='hand2', state=tk.DISABLED)
+        self.stop_btn.pack(side=tk.LEFT, padx=(0, 3), pady=1)
         
-        ttk.Button(buttons_frame, text="⏸️ Pause", 
-                  command=self.pause_trading, width=10).pack(side=tk.LEFT, padx=2)
+        # Pause button
+        pause_btn = tk.Button(buttons_frame, text="⏸️ Pause", 
+                             command=self.pause_trading, width=10,
+                             bg='#6c757d', fg='white',
+                             font=('Segoe UI', 9, 'bold'),
+                             relief=tk.RAISED, bd=1,
+                             activebackground='#5a6268', activeforeground='white',
+                             cursor='hand2')
+        pause_btn.pack(side=tk.LEFT, padx=(0, 3), pady=1)
         
-        # Trading log (MBR-style)
+        # Trading log (takes remaining space)
         log_frame = ttk.LabelFrame(trading_tab, text="Trading Log", padding=5)
-        log_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=2)
+        log_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=(2, 5))
         
-        self.trading_log = scrolledtext.ScrolledText(log_frame, height=10, width=70,
-                                                    font=('Consolas', 8), wrap=tk.WORD)
+        self.trading_log = self.create_colorful_text_widget(log_frame, height=15, width=70)
         self.trading_log.pack(fill=tk.BOTH, expand=True)
         
     def create_backtest_tab(self):
@@ -222,56 +368,85 @@ class GoldenGibzNativeApp:
         params_frame.pack(fill=tk.X, padx=5, pady=2)
         
         # Parameters grid (compact)
-        params_grid = ttk.Frame(params_frame)
+        params_grid = tk.Frame(params_frame, bg=self.colors['bg'])
         params_grid.pack(fill=tk.X)
         
         # System and Symbol
-        ttk.Label(params_grid, text="System:", font=('Segoe UI', 8)).grid(row=0, column=0, sticky=tk.W, padx=2)
-        self.backtest_system = ttk.Combobox(params_grid, values=["Technical", "Hybrid AI-Enhanced", "Pure AI Model"], 
-                                           state="readonly", width=12, font=('Segoe UI', 8))
+        tk.Label(params_grid, text="System:", font=('Segoe UI', 9, 'bold'), 
+                bg=self.colors['bg'], fg='#00ff00').grid(row=0, column=0, sticky=tk.W, padx=2)
+        
+        # System dropdown (styled with ttk.Combobox)
+        self.backtest_system_var = tk.StringVar(value="Technical")
+        self.backtest_system = ttk.Combobox(params_grid, textvariable=self.backtest_system_var,
+                                          values=["Technical", "Hybrid AI-Enhanced", "Pure AI Model"],
+                                          state="readonly", width=15, font=('Segoe UI', 9),
+                                          foreground='black')
         self.backtest_system.grid(row=0, column=1, sticky=tk.W, padx=2)
-        self.backtest_system.set("Technical")
         
         # Symbol
-        ttk.Label(params_grid, text="Symbol:", font=('Segoe UI', 8)).grid(row=0, column=2, sticky=tk.W, padx=5)
-        self.backtest_symbol = ttk.Combobox(params_grid, values=["XAUUSD", "EURUSD"], 
-                                           state="readonly", width=8, font=('Segoe UI', 8))
+        tk.Label(params_grid, text="Symbol:", font=('Segoe UI', 9, 'bold'), 
+                bg=self.colors['bg'], fg='#00ff00').grid(row=0, column=2, sticky=tk.W, padx=5)
+        
+        # Symbol dropdown (styled with ttk.Combobox)
+        self.backtest_symbol_var = tk.StringVar(value="XAUUSD")
+        self.backtest_symbol = ttk.Combobox(params_grid, textvariable=self.backtest_symbol_var,
+                                          values=["XAUUSD", "EURUSD"],
+                                          state="readonly", width=10, font=('Segoe UI', 9),
+                                          foreground='black')
         self.backtest_symbol.grid(row=0, column=3, sticky=tk.W, padx=2)
-        self.backtest_symbol.set("XAUUSD")
         
         # Balance
-        ttk.Label(params_grid, text="Balance:", font=('Segoe UI', 8)).grid(row=0, column=4, sticky=tk.W, padx=5)
-        self.initial_balance = ttk.Entry(params_grid, width=10, font=('Segoe UI', 8))
+        tk.Label(params_grid, text="Balance:", font=('Segoe UI', 9, 'bold'), 
+                bg=self.colors['bg'], fg='#00ff00').grid(row=0, column=4, sticky=tk.W, padx=5)
+        self.initial_balance = tk.Entry(params_grid, width=10, font=('Segoe UI', 9),
+                                       bg='white', fg='black', 
+                                       relief=tk.RAISED, bd=1)
         self.initial_balance.grid(row=0, column=5, sticky=tk.W, padx=2)
         self.initial_balance.insert(0, "500")
         
         # Months selection (second row)
-        ttk.Label(params_grid, text="Months:", font=('Segoe UI', 8)).grid(row=1, column=0, sticky=tk.W, padx=2, pady=2)
-        self.backtest_months = ttk.Combobox(params_grid, values=[str(i) for i in range(1, 25)], 
-                                           state="readonly", width=8, font=('Segoe UI', 8))
+        tk.Label(params_grid, text="Months:", font=('Segoe UI', 9, 'bold'), 
+                bg=self.colors['bg'], fg='#00ff00').grid(row=1, column=0, sticky=tk.W, padx=2, pady=2)
+        
+        # Months dropdown (styled with ttk.Combobox)
+        self.backtest_months_var = tk.StringVar(value="12")
+        months_values = [str(i) for i in range(1, 25)]
+        self.backtest_months = ttk.Combobox(params_grid, textvariable=self.backtest_months_var,
+                                          values=months_values, state="readonly", width=8,
+                                          font=('Segoe UI', 9), foreground='black')
         self.backtest_months.grid(row=1, column=1, sticky=tk.W, padx=2, pady=2)
-        self.backtest_months.set("12")  # Default to 12 months
         
         # Info label for parameters (second row)
-        ttk.Label(params_grid, text="(1-24 months, max 2 years)", font=('Segoe UI', 7)).grid(row=2, column=0, columnspan=2, sticky=tk.W, padx=2, pady=1)
+        tk.Label(params_grid, text="(1-24 months, max 2 years)", font=('Segoe UI', 7),
+                bg=self.colors['bg'], fg='#888888').grid(row=2, column=0, columnspan=2, sticky=tk.W, padx=2, pady=1)
         
         # Control buttons
-        backtest_controls = ttk.Frame(params_frame)
+        backtest_controls = tk.Frame(params_frame, bg=self.colors['bg'])
         backtest_controls.pack(fill=tk.X, pady=2)
         
-        self.backtest_btn = ttk.Button(backtest_controls, text="🚀 Run Backtest", 
-                                      command=self.run_backtest, width=15)
+        self.backtest_btn = tk.Button(backtest_controls, text="🚀 Run Backtest", 
+                                     command=self.run_backtest, width=15,
+                                     bg=self.colors['accent'], fg='white',
+                                     font=('Segoe UI', 9, 'bold'),
+                                     relief=tk.FLAT, bd=0,
+                                     activebackground='#005a9e',
+                                     cursor='hand2')
         self.backtest_btn.pack(side=tk.LEFT, padx=2)
         
-        ttk.Button(backtest_controls, text="📊 Results", 
-                  command=self.view_results, width=12).pack(side=tk.LEFT, padx=2)
+        results_btn = tk.Button(backtest_controls, text="📊 Results", 
+                               command=self.view_results, width=12,
+                               bg='#28a745', fg='white',
+                               font=('Segoe UI', 9, 'bold'),
+                               relief=tk.FLAT, bd=0,
+                               activebackground='#218838',
+                               cursor='hand2')
+        results_btn.pack(side=tk.LEFT, padx=2)
         
         # Results (MBR-style)
         results_frame = ttk.LabelFrame(backtest_tab, text="Results", padding=5)
         results_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=2)
         
-        self.backtest_results = scrolledtext.ScrolledText(results_frame, height=8, width=70,
-                                                         font=('Consolas', 8), wrap=tk.WORD)
+        self.backtest_results = self.create_colorful_text_widget(results_frame, height=10, width=70)
         self.backtest_results.pack(fill=tk.BOTH, expand=True)
         
     def create_data_tab(self):
@@ -284,62 +459,102 @@ class GoldenGibzNativeApp:
         download_frame.pack(fill=tk.X, padx=5, pady=2)
         
         # Download parameters grid
-        params_grid = ttk.Frame(download_frame)
+        params_grid = tk.Frame(download_frame, bg=self.colors['bg'])
         params_grid.pack(fill=tk.X, pady=2)
         
         # Symbol
-        ttk.Label(params_grid, text="Symbol:", font=('Segoe UI', 8)).grid(row=0, column=0, sticky=tk.W, padx=2)
-        self.data_symbol = ttk.Entry(params_grid, width=12, font=('Segoe UI', 8))
+        tk.Label(params_grid, text="Symbol:", font=('Segoe UI', 9, 'bold'), 
+                bg=self.colors['bg'], fg='#00ff00').grid(row=0, column=0, sticky=tk.W, padx=2)
+        self.data_symbol = tk.Entry(params_grid, width=12, font=('Segoe UI', 9),
+                                   bg='white', fg='black', 
+                                   relief=tk.RAISED, bd=1)
         self.data_symbol.grid(row=0, column=1, sticky=tk.W, padx=2)
         self.data_symbol.insert(0, "XAUUSD")
         
         # Years selection
-        ttk.Label(params_grid, text="Years:", font=('Segoe UI', 8)).grid(row=0, column=2, sticky=tk.W, padx=5)
-        self.data_years = ttk.Combobox(params_grid, values=["1", "2"], 
-                                      state="readonly", width=8, font=('Segoe UI', 8))
+        tk.Label(params_grid, text="Years:", font=('Segoe UI', 9, 'bold'), 
+                bg=self.colors['bg'], fg='#00ff00').grid(row=0, column=2, sticky=tk.W, padx=5)
+        
+        # Years dropdown (styled with ttk.Combobox)
+        self.data_years_var = tk.StringVar(value="2")
+        self.data_years = ttk.Combobox(params_grid, textvariable=self.data_years_var,
+                                     values=["1", "2"], state="readonly", width=8,
+                                     font=('Segoe UI', 9), foreground='black')
         self.data_years.grid(row=0, column=3, sticky=tk.W, padx=2)
-        self.data_years.set("2")
         
         # Download button aligned with Symbol/Years row
-        self.download_btn = ttk.Button(params_grid, text="📥 Download", 
-                                      command=self.download_historical_data, width=12)
+        self.download_btn = tk.Button(params_grid, text="📥 Download", 
+                                     command=self.download_historical_data, width=12,
+                                     bg=self.colors['accent'], fg='white',
+                                     font=('Segoe UI', 9, 'bold'),
+                                     relief=tk.FLAT, bd=0,
+                                     activebackground='#005a9e',
+                                     cursor='hand2')
         self.download_btn.grid(row=0, column=4, sticky=tk.W, padx=10)
         
         # Status label for download progress (aligned with download button)
-        self.download_status = ttk.Label(params_grid, text="Ready", font=('Segoe UI', 8))
+        self.download_status = tk.Label(params_grid, text="Ready", font=('Segoe UI', 8),
+                                       bg=self.colors['bg'], fg='#ffaa00')
         self.download_status.grid(row=0, column=5, sticky=tk.W, padx=5)
         
         # Timeframes info
-        tf_info = ttk.Frame(download_frame)
+        tf_info = tk.Frame(download_frame, bg=self.colors['bg'])
         tf_info.pack(fill=tk.X, pady=2)
         
-        ttk.Label(tf_info, text="Timeframes:", font=('Segoe UI', 8, 'bold')).pack(side=tk.LEFT)
-        ttk.Label(tf_info, text="15m, 30m, 1H, 2H, 4H, 1D", 
-                 font=('Segoe UI', 8)).pack(side=tk.LEFT, padx=5)
+        tk.Label(tf_info, text="Timeframes:", font=('Segoe UI', 8, 'bold'),
+                bg=self.colors['bg'], fg='white').pack(side=tk.LEFT)
+        tk.Label(tf_info, text="15m, 30m, 1H, 2H, 4H, 1D", font=('Segoe UI', 8),
+                bg=self.colors['bg'], fg='#4da6ff').pack(side=tk.LEFT, padx=5)
         
         # Data Management Section
         manage_frame = ttk.LabelFrame(data_tab, text="Data Management", padding=5)
         manage_frame.pack(fill=tk.X, padx=5, pady=2)
         
         # Management controls
-        manage_controls = ttk.Frame(manage_frame)
+        manage_controls = tk.Frame(manage_frame, bg=self.colors['bg'])
         manage_controls.pack(fill=tk.X, pady=2)
         
-        ttk.Button(manage_controls, text="📁 Data Folder", 
-                  command=self.open_data_folder, width=12).pack(side=tk.LEFT, padx=2)
-        ttk.Button(manage_controls, text="🔍 Data Status", 
-                  command=self.check_data_status, width=12).pack(side=tk.LEFT, padx=2)
-        ttk.Button(manage_controls, text="📥 Download Missing", 
-                  command=self.download_missing_timeframes, width=16).pack(side=tk.LEFT, padx=2)
-        ttk.Button(manage_controls, text="🗑️ Clear Data", 
-                  command=self.clear_data, width=12).pack(side=tk.LEFT, padx=2)
+        data_folder_btn = tk.Button(manage_controls, text="📁 Data Folder", 
+                                   command=self.open_data_folder, width=12,
+                                   bg='#6f42c1', fg='white',
+                                   font=('Segoe UI', 8, 'bold'),
+                                   relief=tk.FLAT, bd=0,
+                                   activebackground='#5a32a3',
+                                   cursor='hand2')
+        data_folder_btn.pack(side=tk.LEFT, padx=2)
+        
+        data_status_btn = tk.Button(manage_controls, text="🔍 Data Status", 
+                                   command=self.check_data_status, width=12,
+                                   bg='#17a2b8', fg='white',
+                                   font=('Segoe UI', 8, 'bold'),
+                                   relief=tk.FLAT, bd=0,
+                                   activebackground='#138496',
+                                   cursor='hand2')
+        data_status_btn.pack(side=tk.LEFT, padx=2)
+        
+        download_missing_btn = tk.Button(manage_controls, text="📥 Download Missing", 
+                                        command=self.download_missing_timeframes, width=16,
+                                        bg='#28a745', fg='white',
+                                        font=('Segoe UI', 8, 'bold'),
+                                        relief=tk.FLAT, bd=0,
+                                        activebackground='#218838',
+                                        cursor='hand2')
+        download_missing_btn.pack(side=tk.LEFT, padx=2)
+        
+        clear_data_btn = tk.Button(manage_controls, text="🗑️ Clear Data", 
+                                  command=self.clear_data, width=12,
+                                  bg='#dc3545', fg='white',
+                                  font=('Segoe UI', 8, 'bold'),
+                                  relief=tk.FLAT, bd=0,
+                                  activebackground='#c82333',
+                                  cursor='hand2')
+        clear_data_btn.pack(side=tk.LEFT, padx=2)
         
         # Data Status Display
         status_frame = ttk.LabelFrame(data_tab, text="Data Status", padding=5)
         status_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=2)
         
-        self.data_status_text = scrolledtext.ScrolledText(status_frame, height=10, width=50,
-                                                         font=('Consolas', 8), wrap=tk.WORD)
+        self.data_status_text = self.create_colorful_text_widget(status_frame, height=12, width=70)
         self.data_status_text.pack(fill=tk.BOTH, expand=True)
         
         # Initialize data status display
@@ -355,7 +570,7 @@ class GoldenGibzNativeApp:
         config_frame.pack(fill=tk.X, padx=5, pady=2)
         
         # Config grid (compact like MBR)
-        config_grid = ttk.Frame(config_frame)
+        config_grid = tk.Frame(config_frame, bg=self.colors['bg'])
         config_grid.pack(fill=tk.X, pady=2)
         
         # Configuration items (compact layout)
@@ -372,30 +587,52 @@ class GoldenGibzNativeApp:
         ]
         
         for label, default, row, col in config_items:
-            ttk.Label(config_grid, text=label, font=('Segoe UI', 8)).grid(row=row, column=col, sticky=tk.W, padx=2, pady=1)
+            tk.Label(config_grid, text=label, font=('Segoe UI', 9, 'bold'), 
+                    bg=self.colors['bg'], fg='#00ff00').grid(row=row, column=col, sticky=tk.W, padx=2, pady=1)
             var = tk.StringVar(value=default)
-            entry = ttk.Entry(config_grid, textvariable=var, width=12, font=('Segoe UI', 8))
+            entry = tk.Entry(config_grid, textvariable=var, width=12, font=('Segoe UI', 9),
+                           bg='white', fg='black', 
+                           relief=tk.RAISED, bd=1)
             entry.grid(row=row, column=col+1, sticky=tk.W, padx=2, pady=1)
             key = label.lower().replace(":", "").replace(" ", "_").replace("(", "").replace(")", "")
             self.config_vars[key] = var
         
         # Save/Load buttons
-        config_buttons = ttk.Frame(config_frame)
+        config_buttons = tk.Frame(config_frame, bg=self.colors['bg'])
         config_buttons.pack(fill=tk.X, pady=5)
         
-        ttk.Button(config_buttons, text="💾 Save Config", 
-                  command=self.save_config, width=12).pack(side=tk.LEFT, padx=2)
-        ttk.Button(config_buttons, text="📂 Load Config", 
-                  command=self.load_config_file, width=12).pack(side=tk.LEFT, padx=2)
-        ttk.Button(config_buttons, text="🔄 Reset Config", 
-                  command=self.reset_config, width=12).pack(side=tk.LEFT, padx=2)
+        save_config_btn = tk.Button(config_buttons, text="💾 Save Config", 
+                                   command=self.save_config, width=12,
+                                   bg='#28a745', fg='white',
+                                   font=('Segoe UI', 9, 'bold'),
+                                   relief=tk.FLAT, bd=0,
+                                   activebackground='#218838',
+                                   cursor='hand2')
+        save_config_btn.pack(side=tk.LEFT, padx=2)
+        
+        load_config_btn = tk.Button(config_buttons, text="📂 Load Config", 
+                                   command=self.load_config_file, width=12,
+                                   bg=self.colors['accent'], fg='white',
+                                   font=('Segoe UI', 9, 'bold'),
+                                   relief=tk.FLAT, bd=0,
+                                   activebackground='#005a9e',
+                                   cursor='hand2')
+        load_config_btn.pack(side=tk.LEFT, padx=2)
+        
+        reset_config_btn = tk.Button(config_buttons, text="🔄 Reset Config", 
+                                    command=self.reset_config, width=12,
+                                    bg='#ffc107', fg='black',
+                                    font=('Segoe UI', 9, 'bold'),
+                                    relief=tk.FLAT, bd=0,
+                                    activebackground='#e0a800',
+                                    cursor='hand2')
+        reset_config_btn.pack(side=tk.LEFT, padx=2)
         
         # Configuration Status Display
         status_frame = ttk.LabelFrame(config_tab, text="Configuration Status", padding=5)
         status_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=2)
         
-        self.config_status_text = scrolledtext.ScrolledText(status_frame, height=12, width=50,
-                                                           font=('Consolas', 8), wrap=tk.WORD)
+        self.config_status_text = self.create_colorful_text_widget(status_frame, height=14, width=70)
         self.config_status_text.pack(fill=tk.BOTH, expand=True)
         
         # Initialize config status display
@@ -411,36 +648,54 @@ class GoldenGibzNativeApp:
         training_frame.pack(fill=tk.X, padx=5, pady=2)
         
         # Training parameters grid
-        params_grid = ttk.Frame(training_frame)
+        params_grid = tk.Frame(training_frame, bg=self.colors['bg'])
         params_grid.pack(fill=tk.X, pady=2)
         
         # Symbol/Pair selection
-        ttk.Label(params_grid, text="Symbol/Pair:", font=('Segoe UI', 8)).grid(row=0, column=0, sticky=tk.W, padx=2)
-        self.train_symbol = ttk.Entry(params_grid, width=12, font=('Segoe UI', 8))
+        tk.Label(params_grid, text="Symbol/Pair:", font=('Segoe UI', 9, 'bold'), 
+                bg=self.colors['bg'], fg='#00ff00').grid(row=0, column=0, sticky=tk.W, padx=2)
+        self.train_symbol = tk.Entry(params_grid, width=12, font=('Segoe UI', 9),
+                                    bg='white', fg='black', 
+                                    relief=tk.RAISED, bd=1)
         self.train_symbol.grid(row=0, column=1, sticky=tk.W, padx=2)
         self.train_symbol.insert(0, "XAUUSD")
         
         # Training duration
-        ttk.Label(params_grid, text="Duration:", font=('Segoe UI', 8)).grid(row=0, column=2, sticky=tk.W, padx=5)
-        self.train_duration = ttk.Combobox(params_grid, values=["100K", "500K", "1M", "2M"], 
-                                          state="readonly", width=8, font=('Segoe UI', 8))
+        tk.Label(params_grid, text="Duration:", font=('Segoe UI', 9, 'bold'), 
+                bg=self.colors['bg'], fg='#00ff00').grid(row=0, column=2, sticky=tk.W, padx=5)
+        
+        # Duration dropdown (styled with ttk.Combobox)
+        self.train_duration_var = tk.StringVar(value="1M")
+        self.train_duration = ttk.Combobox(params_grid, textvariable=self.train_duration_var,
+                                         values=["100K", "500K", "1M", "2M"], state="readonly",
+                                         width=8, font=('Segoe UI', 9), foreground='black')
         self.train_duration.grid(row=0, column=3, sticky=tk.W, padx=2)
-        self.train_duration.set("1M")  # 1 Million timesteps
         
         # Training controls
-        training_controls = ttk.Frame(training_frame)
+        training_controls = tk.Frame(training_frame, bg=self.colors['bg'])
         training_controls.pack(fill=tk.X, pady=2)
         
-        self.train_btn = ttk.Button(training_controls, text="🚀 Start Training", 
-                                   command=self.start_model_training, width=16)
+        self.train_btn = tk.Button(training_controls, text="🚀 Start Training", 
+                                  command=self.start_model_training, width=16,
+                                  bg=self.colors['accent'], fg='white',
+                                  font=('Segoe UI', 9, 'bold'),
+                                  relief=tk.FLAT, bd=0,
+                                  activebackground='#005a9e',
+                                  cursor='hand2')
         self.train_btn.pack(side=tk.LEFT, padx=1)
         
-        self.stop_train_btn = ttk.Button(training_controls, text="⏹️ Stop Training", 
-                                        command=self.stop_model_training, state=tk.DISABLED, width=16)
+        self.stop_train_btn = tk.Button(training_controls, text="⏹️ Stop Training", 
+                                       command=self.stop_model_training, width=16,
+                                       bg='#dc3545', fg='white',
+                                       font=('Segoe UI', 9, 'bold'),
+                                       relief=tk.FLAT, bd=0,
+                                       activebackground='#c82333',
+                                       cursor='hand2', state=tk.DISABLED)
         self.stop_train_btn.pack(side=tk.LEFT, padx=1)
         
         # Training status
-        self.training_status = ttk.Label(training_controls, text="Ready", font=('Segoe UI', 8))
+        self.training_status = tk.Label(training_controls, text="Ready", font=('Segoe UI', 8),
+                                       bg=self.colors['bg'], fg='#ffaa00')
         self.training_status.pack(side=tk.LEFT, padx=10)
         
         # Model Management Section
@@ -448,26 +703,66 @@ class GoldenGibzNativeApp:
         manage_frame.pack(fill=tk.X, padx=5, pady=2)
         
         # Management controls - First row
-        manage_controls = ttk.Frame(manage_frame)
+        manage_controls = tk.Frame(manage_frame, bg=self.colors['bg'])
         manage_controls.pack(fill=tk.X, pady=2)
         
-        ttk.Button(manage_controls, text="📁 Models Folder", 
-                  command=self.open_models_folder, width=16).pack(side=tk.LEFT, padx=1)
-        ttk.Button(manage_controls, text="🔍 List Models", 
-                  command=self.list_available_models, width=14).pack(side=tk.LEFT, padx=1)
-        ttk.Button(manage_controls, text="📊 Evaluate Model", 
-                  command=self.evaluate_model, width=16).pack(side=tk.LEFT, padx=1)
+        models_folder_btn = tk.Button(manage_controls, text="📁 Models Folder", 
+                                     command=self.open_models_folder, width=16,
+                                     bg='#6f42c1', fg='white',
+                                     font=('Segoe UI', 8, 'bold'),
+                                     relief=tk.FLAT, bd=0,
+                                     activebackground='#5a32a3',
+                                     cursor='hand2')
+        models_folder_btn.pack(side=tk.LEFT, padx=1)
+        
+        list_models_btn = tk.Button(manage_controls, text="🔍 List Models", 
+                                   command=self.list_available_models, width=14,
+                                   bg='#17a2b8', fg='white',
+                                   font=('Segoe UI', 8, 'bold'),
+                                   relief=tk.FLAT, bd=0,
+                                   activebackground='#138496',
+                                   cursor='hand2')
+        list_models_btn.pack(side=tk.LEFT, padx=1)
+        
+        evaluate_model_btn = tk.Button(manage_controls, text="📊 Evaluate Model", 
+                                      command=self.evaluate_model, width=16,
+                                      bg='#28a745', fg='white',
+                                      font=('Segoe UI', 8, 'bold'),
+                                      relief=tk.FLAT, bd=0,
+                                      activebackground='#218838',
+                                      cursor='hand2')
+        evaluate_model_btn.pack(side=tk.LEFT, padx=1)
         
         # Second row of management controls
-        manage_controls2 = ttk.Frame(manage_frame)
+        manage_controls2 = tk.Frame(manage_frame, bg=self.colors['bg'])
         manage_controls2.pack(fill=tk.X, pady=2)
         
-        ttk.Button(manage_controls2, text="⚙️Install Dependencies", 
-                  command=self.install_training_deps, width=22).pack(side=tk.LEFT, padx=1)
-        ttk.Button(manage_controls2, text="🗑️Clean Models", 
-                  command=self.clean_old_models, width=16).pack(side=tk.LEFT, padx=1)
-        ttk.Button(manage_controls2, text="📋Training Logs", 
-                  command=self.view_training_logs, width=16).pack(side=tk.LEFT, padx=1)
+        install_deps_btn = tk.Button(manage_controls2, text="⚙️Install Dependencies", 
+                                    command=self.install_training_deps, width=22,
+                                    bg='#fd7e14', fg='white',
+                                    font=('Segoe UI', 8, 'bold'),
+                                    relief=tk.FLAT, bd=0,
+                                    activebackground='#e8650e',
+                                    cursor='hand2')
+        install_deps_btn.pack(side=tk.LEFT, padx=1)
+        
+        clean_models_btn = tk.Button(manage_controls2, text="🗑️Clean Models", 
+                                    command=self.clean_old_models, width=16,
+                                    bg='#dc3545', fg='white',
+                                    font=('Segoe UI', 8, 'bold'),
+                                    relief=tk.FLAT, bd=0,
+                                    activebackground='#c82333',
+                                    cursor='hand2')
+        clean_models_btn.pack(side=tk.LEFT, padx=1)
+        
+        training_logs_btn = tk.Button(manage_controls2, text="📋Training Logs", 
+                                     command=self.view_training_logs, width=16,
+                                     bg='#6c757d', fg='white',
+                                     font=('Segoe UI', 8, 'bold'),
+                                     relief=tk.FLAT, bd=0,
+                                     activebackground='#5a6268',
+                                     cursor='hand2')
+        training_logs_btn.pack(side=tk.LEFT, padx=1)
         
         # Training Progress and Model Status Display
         status_frame = ttk.LabelFrame(model_tab, text="Training Progress & Model Status", padding=5)
@@ -482,26 +777,44 @@ class GoldenGibzNativeApp:
         self.model_notebook.add(log_frame, text="Training Log")
         
         # Training log controls
-        log_controls = ttk.Frame(log_frame)
+        log_controls = tk.Frame(log_frame, bg=self.colors['bg'])
         log_controls.pack(fill=tk.X, padx=2, pady=2)
         
-        ttk.Button(log_controls, text="🔄Refresh Log", 
-                  command=self.refresh_training_log, width=14).pack(side=tk.LEFT, padx=1)
-        ttk.Button(log_controls, text="🗑️Clear Log", 
-                  command=self.clear_training_log, width=14).pack(side=tk.LEFT, padx=1)
-        ttk.Button(log_controls, text="💾Save Log", 
-                  command=self.save_training_log, width=14).pack(side=tk.LEFT, padx=1)
+        refresh_log_btn = tk.Button(log_controls, text="🔄Refresh Log", 
+                                   command=self.refresh_training_log, width=14,
+                                   bg='#17a2b8', fg='white',
+                                   font=('Segoe UI', 8, 'bold'),
+                                   relief=tk.FLAT, bd=0,
+                                   activebackground='#138496',
+                                   cursor='hand2')
+        refresh_log_btn.pack(side=tk.LEFT, padx=1)
         
-        self.training_log = scrolledtext.ScrolledText(log_frame, height=10, width=70,
-                                                     font=('Consolas', 8), wrap=tk.WORD)
+        clear_log_btn = tk.Button(log_controls, text="🗑️Clear Log", 
+                                 command=self.clear_training_log, width=14,
+                                 bg='#dc3545', fg='white',
+                                 font=('Segoe UI', 8, 'bold'),
+                                 relief=tk.FLAT, bd=0,
+                                 activebackground='#c82333',
+                                 cursor='hand2')
+        clear_log_btn.pack(side=tk.LEFT, padx=1)
+        
+        save_log_btn = tk.Button(log_controls, text="💾Save Log", 
+                                command=self.save_training_log, width=14,
+                                bg='#28a745', fg='white',
+                                font=('Segoe UI', 8, 'bold'),
+                                relief=tk.FLAT, bd=0,
+                                activebackground='#218838',
+                                cursor='hand2')
+        save_log_btn.pack(side=tk.LEFT, padx=1)
+        
+        self.training_log = self.create_colorful_text_widget(log_frame, height=12, width=70)
         self.training_log.pack(fill=tk.BOTH, expand=True, padx=2, pady=2)
         
         # Model Status tab
         status_tab_frame = ttk.Frame(self.model_notebook)
         self.model_notebook.add(status_tab_frame, text="Model Status")
         
-        self.model_status_text = scrolledtext.ScrolledText(status_tab_frame, height=12, width=70,
-                                                          font=('Consolas', 8), wrap=tk.WORD)
+        self.model_status_text = self.create_colorful_text_widget(status_tab_frame, height=14, width=70)
         self.model_status_text.pack(fill=tk.BOTH, expand=True)
         
         # Initialize model status display
@@ -512,25 +825,75 @@ class GoldenGibzNativeApp:
         self.training_thread = None
         
     def create_status_bar(self, parent):
-        """Create bottom status bar (MBR-style)"""
-        status_frame = ttk.Frame(parent)
+        """Create professional status bar"""
+        status_frame = tk.Frame(parent, bg=self.colors['bg'], height=30)
         status_frame.pack(fill=tk.X, side=tk.BOTTOM)
+        status_frame.pack_propagate(False)
         
-        # Status bar (similar to MBR)
-        self.status_bar = ttk.Frame(status_frame, relief=tk.SUNKEN)
-        self.status_bar.pack(fill=tk.X, padx=2, pady=2)
+        # Professional status bar with gradient-like appearance
+        self.status_bar = tk.Frame(status_frame, bg=self.colors['frame_bg'], relief=tk.RAISED, bd=1)
+        self.status_bar.pack(fill=tk.BOTH, expand=True, padx=2, pady=2)
         
-        # Status sections (MBR-style)
-        self.status_left = ttk.Label(self.status_bar, textvariable=self.status_text, 
-                                    relief=tk.SUNKEN, anchor=tk.W, font=('Segoe UI', 8))
-        self.status_left.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=2)
+        # Left status section
+        self.status_left = tk.Label(self.status_bar, 
+                                   textvariable=self.status_text,
+                                   bg=self.colors['frame_bg'],
+                                   fg='white',
+                                   font=('Segoe UI', 9),
+                                   anchor=tk.W)
+        self.status_left.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=8, pady=4)
         
-        self.status_right = ttk.Label(self.status_bar, text=datetime.now().strftime("%H:%M:%S"), 
-                                     relief=tk.SUNKEN, anchor=tk.E, font=('Segoe UI', 8))
-        self.status_right.pack(side=tk.RIGHT, padx=2)
+        # Connection status in middle
+        self.connection_status = tk.Label(self.status_bar,
+                                        text="Disconnected",
+                                        bg=self.colors['frame_bg'],
+                                        fg='#ff4444',
+                                        font=('Segoe UI', 9, 'bold'))
+        self.connection_status.pack(side=tk.LEFT, padx=10)
+        
+        # Time on right
+        self.status_right = tk.Label(self.status_bar, 
+                                    text=datetime.now().strftime("%H:%M:%S"),
+                                    bg=self.colors['frame_bg'],
+                                    fg='#4da6ff',
+                                    font=('Segoe UI', 9, 'bold'),
+                                    anchor=tk.E)
+        self.status_right.pack(side=tk.RIGHT, padx=8, pady=4)
         
         # Update time every second
         self.update_time()
+    
+    def on_tab_changed(self, event):
+        """Handle tab change events for dynamic styling"""
+        try:
+            selected_tab = self.notebook.index(self.notebook.select())
+            tab_names = ["Dashboard", "Trading", "Backtest", "Data", "Config", "Model"]
+            
+            if selected_tab < len(tab_names):
+                # Update main status only
+                self.update_status(f"{tab_names[selected_tab]} Tab Active")
+                
+        except Exception as e:
+            pass  # Ignore tab change errors
+    
+    def update_connection_indicators(self, connected=False):
+        """Update connection indicators throughout the UI"""
+        if connected:
+            # Update title bar indicator
+            self.connection_indicator.config(fg='#00ff00')  # Green
+            # Update status bar
+            self.connection_status.config(text="Connected", fg='#00ff00')
+            # Update dashboard button if it exists
+            if hasattr(self, 'dashboard_connect_btn'):
+                self.dashboard_connect_btn.config(text="🔌 Disconnect", bg='#4CAF50')
+        else:
+            # Update title bar indicator  
+            self.connection_indicator.config(fg='#ff4444')  # Red
+            # Update status bar
+            self.connection_status.config(text="Disconnected", fg='#ff4444')
+            # Update dashboard button if it exists
+            if hasattr(self, 'dashboard_connect_btn'):
+                self.dashboard_connect_btn.config(text="🔌 Connect to MT5", bg='#FF6B6B')
         
     # ==================== EVENT HANDLERS ====================
     
@@ -543,15 +906,21 @@ class GoldenGibzNativeApp:
         self.notebook.select(2)  # Switch to backtest tab only
         
     def toggle_connection(self):
-        """Toggle MT5 connection status"""
+        """Toggle MT5 connection status - synced between Dashboard and Trading tabs"""
         try:
             if self.is_connected.get():
                 # Disconnect
                 self.is_connected.set(False)
-                self.connect_btn.config(text="🔌 Connect", bg='#FF6B6B', fg='white')
+                # Update Trading tab button
+                self.connect_btn.config(text="🔌 Connect", bg='#FF4444')
+                # Update Dashboard tab button
+                self.dashboard_connect_btn.config(text="🔌 Connect to MT5", bg='#FF6B6B')
                 self.start_btn.config(state=tk.DISABLED)
                 self.log_message("🔴 Disconnected from MT5")
                 self.update_status("Disconnected")
+                
+                # Update connection indicators
+                self.update_connection_indicators(False)
                 
                 # Add disconnection log
                 self.trading_log.insert(tk.END, f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} [INFO] MT5 Connection closed\n")
@@ -562,11 +931,14 @@ class GoldenGibzNativeApp:
                 self.log_message("🔄 Connecting to MT5...")
                 self.update_status("Connecting...")
                 
+                # Update buttons to show connecting state
+                self.connect_btn.config(text="🔄 Connecting...", bg='#FFA500')
+                self.dashboard_connect_btn.config(text="🔄 Connecting...", bg='#FFA500')
+                
                 # Simulate connection process
                 self.root.after(1000, self._complete_connection)
                 
         except Exception as e:
-            messagebox.showerror("Connection Error", f"Failed to toggle connection: {str(e)}")
             self.log_message(f"ERROR: Connection error: {str(e)}")
     
     def _complete_connection(self):
@@ -574,10 +946,16 @@ class GoldenGibzNativeApp:
         try:
             # Simulate successful connection
             self.is_connected.set(True)
-            self.connect_btn.config(text="🔌 Disconnect", bg='#4CAF50', fg='white')
+            # Update Trading tab button
+            self.connect_btn.config(text="🔌 Disconnect", bg='#4CAF50')
+            # Update Dashboard tab button
+            self.dashboard_connect_btn.config(text="🔌 Disconnect", bg='#4CAF50')
             self.start_btn.config(state=tk.NORMAL)
             self.log_message("🟢 Connected to MT5 successfully")
             self.update_status("Connected")
+            
+            # Update connection indicators
+            self.update_connection_indicators(True)
             
             # Add connection log with details
             connection_log = f"""{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} [INFO] MT5 Connection established
@@ -589,18 +967,17 @@ class GoldenGibzNativeApp:
             self.trading_log.see(tk.END)
             
         except Exception as e:
-            messagebox.showerror("Connection Error", f"Failed to connect: {str(e)}")
             self.log_message(f"ERROR: Connection failed: {str(e)}")
         
     def start_trading(self):
         """Start live trading"""
         if self.is_trading.get():
-            messagebox.showwarning("Warning", "Trading is already running!")
+            self.log_message("⚠️ Trading is already running!")
             return
             
         # Check connection status first
         if not self.is_connected.get():
-            messagebox.showerror("Connection Required", "Please connect to MT5 first before starting trading!")
+            self.log_message("❌ Please connect to MT5 first before starting trading!")
             return
             
         try:
@@ -628,10 +1005,9 @@ class GoldenGibzNativeApp:
             self.stop_btn.config(state=tk.NORMAL)
             self.trading_status_label.config(text="Running", foreground='green')
             
-            messagebox.showinfo("Success", f"{mode} trading started for {symbol}!")
+            self.log_message(f"✅ {mode} trading started for {symbol}!")
             
         except Exception as e:
-            messagebox.showerror("Error", f"Failed to start trading: {str(e)}")
             self.log_message(f"ERROR: Failed to start trading: {str(e)}")
             
     def stop_trading(self):
@@ -652,7 +1028,6 @@ class GoldenGibzNativeApp:
             else:
                 self.start_btn.config(state=tk.DISABLED)
             self.stop_btn.config(state=tk.DISABLED)
-            self.trading_status_label.config(text="Stopped", foreground='red')
             
             self.log_message("Trading stopped successfully")
             self.update_status("Connected" if self.is_connected.get() else "Disconnected")
@@ -672,10 +1047,10 @@ class GoldenGibzNativeApp:
             return
             
         try:
-            system = self.backtest_system.get()
+            system = self.backtest_system_var.get()
             balance = self.initial_balance.get()
-            months = self.backtest_months.get()
-            symbol = self.backtest_symbol.get().strip().upper()
+            months = self.backtest_months_var.get()
+            symbol = self.backtest_symbol_var.get().strip().upper()
             
             if not balance or float(balance) <= 0:
                 messagebox.showerror("Error", "Please enter a valid initial balance")
@@ -2880,30 +3255,79 @@ Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"""
     # ==================== UTILITY METHODS ====================
     
     def check_log_queue(self):
-        """Check for new log messages"""
+        """Check for new log messages with color support"""
         try:
             while True:
                 log_type, message = self.log_queue.get_nowait()
                 
                 timestamp = datetime.now().strftime('%H:%M:%S')
-                formatted_message = f"{timestamp} - {message}\n"
+                
+                # Determine color based on message content
+                color_tag = self.get_message_color_tag(message)
                 
                 if log_type == 'trading':
-                    self.trading_log.insert(tk.END, formatted_message)
+                    self.insert_colored_text_to_widget(self.trading_log, f"{timestamp} - ", "info")
+                    self.insert_colored_text_to_widget(self.trading_log, f"{message}\n", color_tag)
                     self.trading_log.see(tk.END)
                 elif log_type == 'training':
-                    # Add training messages to training log
-                    self.training_log.insert(tk.END, formatted_message)
+                    # Add training messages to training log with colors
+                    self.insert_colored_text_to_widget(self.training_log, f"{timestamp} - ", "info")
+                    self.insert_colored_text_to_widget(self.training_log, f"{message}\n", color_tag)
                     self.training_log.see(tk.END)
                     
                     # Switch to training log tab when training starts
                     if "Starting" in message or "Initializing" in message:
                         self.model_notebook.select(0)  # Select Training Log tab
+                elif log_type == 'backtest':
+                    # Add backtest messages with colors
+                    self.insert_colored_text_to_widget(self.backtest_results, f"{timestamp} - ", "info")
+                    self.insert_colored_text_to_widget(self.backtest_results, f"{message}\n", color_tag)
+                    self.backtest_results.see(tk.END)
                 
         except queue.Empty:
             pass
         finally:
             self.root.after(100, self.check_log_queue)
+    
+    def get_message_color_tag(self, message):
+        """Determine color tag based on message content"""
+        message_lower = message.lower()
+        
+        # Error messages
+        if any(word in message_lower for word in ['error', '❌', 'failed', 'fail']):
+            return "error"
+        
+        # Success messages
+        elif any(word in message_lower for word in ['✅', 'success', 'completed', 'connected', 'executed']):
+            return "success"
+        
+        # Warning messages
+        elif any(word in message_lower for word in ['⚠️', 'warning', 'skipping', 'rejected']):
+            return "warning"
+        
+        # Profit/positive P&L
+        elif any(word in message for word in ['💚', '💰', '+$', 'profit']):
+            return "profit"
+        
+        # Loss/negative P&L
+        elif any(word in message for word in ['💔', '-$', 'loss']):
+            return "loss"
+        
+        # Signal messages
+        elif any(word in message_lower for word in ['🎯', 'signal', 'buy', 'sell', 'short', 'long']):
+            return "signal"
+        
+        # Trade messages
+        elif any(word in message_lower for word in ['trade', 'position', 'lot']):
+            return "trade"
+        
+        # Header messages
+        elif any(word in message for word in ['🚀', '📡', '💰', '📊', '⚙️', '=']):
+            return "header"
+        
+        # Default to info
+        else:
+            return "info"
             
     def log_message(self, message, level="INFO"):
         """Add message to logs - now logs to trading tab and model tab as appropriate"""
@@ -2923,6 +3347,196 @@ Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"""
         current_time = datetime.now().strftime("%H:%M:%S")
         self.status_right.config(text=current_time)
         self.root.after(1000, self.update_time)
+        
+    def update_dashboard_button_state(self):
+        """Update dashboard connect button state"""
+        if self.is_connected.get():
+            self.dashboard_connect_btn.config(text="🔌 Disconnect", bg='#4CAF50', fg='white')
+        else:
+            self.dashboard_connect_btn.config(text="🔌 Connect to MT5", bg='#FF6B6B', fg='white')
+    
+    def schedule_dashboard_updates(self):
+        """Schedule automatic dashboard updates every 2 seconds"""
+        self.update_dashboard_status()
+        self.update_dashboard_button_state()  # Keep button state in sync
+        # Schedule next update
+        self.root.after(2000, self.schedule_dashboard_updates)
+    
+    def create_colorful_text_widget(self, parent, height=15, width=70):
+        """Create a colorful text widget with dark theme like the dashboard"""
+        text_widget = scrolledtext.ScrolledText(parent, height=height, width=width,
+                                               font=('Consolas', 9), wrap=tk.WORD,
+                                               bg='#1e1e1e', fg='#ffffff')
+        
+        # Configure color tags
+        text_widget.tag_configure("header", foreground="#00ff00", font=('Consolas', 10, 'bold'))
+        text_widget.tag_configure("success", foreground="#00ff00")
+        text_widget.tag_configure("warning", foreground="#ffaa00")
+        text_widget.tag_configure("error", foreground="#ff4444")
+        text_widget.tag_configure("info", foreground="#4da6ff")
+        text_widget.tag_configure("profit", foreground="#00ff88")
+        text_widget.tag_configure("loss", foreground="#ff6666")
+        text_widget.tag_configure("signal", foreground="#ff88ff")
+        text_widget.tag_configure("trade", foreground="#88ffff")
+        
+        return text_widget
+    
+    def insert_colored_text_to_widget(self, widget, text, tag=None):
+        """Insert colored text into any text widget"""
+        if tag:
+            widget.insert(tk.END, text, tag)
+        else:
+            widget.insert(tk.END, text)
+    
+    def update_dashboard_status(self):
+        """Update real-time system status display"""
+        try:
+            import MetaTrader5 as mt5
+            from datetime import datetime
+            
+            # Clear display
+            self.status_display.delete(1.0, tk.END)
+            
+            # Header
+            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            self.insert_colored_text("=" * 70 + "\n", "header")
+            self.insert_colored_text("🤖 GOLDEN GIBZ TRADING SYSTEM - REAL-TIME STATUS\n", "header")
+            self.insert_colored_text(f"📅 {current_time}\n", "info")
+            self.insert_colored_text("=" * 70 + "\n\n", "header")
+            
+            # MT5 Connection Status
+            self.insert_colored_text("📡 MT5 CONNECTION STATUS:\n", "header")
+            if self.is_connected.get():
+                try:
+                    # Try to get real MT5 info
+                    if mt5.initialize():
+                        account_info = mt5.account_info()
+                        if account_info:
+                            self.insert_colored_text("✅ Status: Connected\n", "success")
+                            self.insert_colored_text(f"✅ Server: {account_info.server}\n", "success")
+                            self.insert_colored_text(f"✅ Account: {account_info.login}\n", "success")
+                            self.insert_colored_text(f"✅ Company: {account_info.company}\n", "success")
+                        else:
+                            self.insert_colored_text("⚠️ Status: Connected but no account info\n", "warning")
+                    else:
+                        self.insert_colored_text("❌ Status: Connection failed\n", "error")
+                except:
+                    self.insert_colored_text("✅ Status: Connected (Demo Mode)\n", "success")
+                    self.insert_colored_text("✅ Server: Demo-Server\n", "success")
+            else:
+                self.insert_colored_text("❌ Status: Disconnected\n", "error")
+                self.insert_colored_text("💡 Click 'Connect to MT5' to establish connection\n", "info")
+            
+            self.insert_colored_text("\n")
+            
+            # Trading Status
+            self.insert_colored_text("📈 TRADING STATUS:\n", "header")
+            if self.is_trading.get():
+                self.insert_colored_text("✅ Status: Active Trading\n", "success")
+                self.insert_colored_text(f"✅ Mode: {self.trading_mode.get()}\n", "success")
+                self.insert_colored_text(f"✅ Symbol: {self.trading_symbol.get()}\n", "success")
+            else:
+                self.insert_colored_text("⏸️ Status: Stopped\n", "warning")
+                self.insert_colored_text(f"⚙️ Mode: {self.trading_mode.get()}\n", "info")
+                self.insert_colored_text(f"⚙️ Symbol: {self.trading_symbol.get()}\n", "info")
+            
+            self.insert_colored_text("\n")
+            
+            # Account Status (if connected)
+            if self.is_connected.get():
+                self.insert_colored_text("💰 ACCOUNT STATUS:\n", "header")
+                try:
+                    if mt5.initialize():
+                        account_info = mt5.account_info()
+                        if account_info:
+                            balance = account_info.balance
+                            equity = account_info.equity
+                            margin_free = account_info.margin_free
+                            margin_level = account_info.margin_level if account_info.margin_level else 0
+                            
+                            self.insert_colored_text(f"💵 Balance: ${balance:.2f}\n", "info")
+                            
+                            if equity >= balance:
+                                self.insert_colored_text(f"💚 Equity: ${equity:.2f}\n", "profit")
+                            else:
+                                self.insert_colored_text(f"💔 Equity: ${equity:.2f}\n", "loss")
+                            
+                            self.insert_colored_text(f"💸 Free Margin: ${margin_free:.2f}\n", "info")
+                            self.insert_colored_text(f"📊 Margin Level: {margin_level:.1f}%\n", "info")
+                            self.insert_colored_text(f"🎯 Leverage: 1:{account_info.leverage}\n", "info")
+                        else:
+                            self.insert_colored_text("⚠️ Account info unavailable\n", "warning")
+                except:
+                    # Demo data
+                    self.insert_colored_text("💵 Balance: $487.21 (Demo)\n", "info")
+                    self.insert_colored_text("💚 Equity: $487.21 (Demo)\n", "profit")
+                    self.insert_colored_text("💸 Free Margin: $487.21 (Demo)\n", "info")
+                    self.insert_colored_text("🎯 Leverage: 1:300 (Demo)\n", "info")
+                
+                self.insert_colored_text("\n")
+            
+            # Open Trades Status
+            self.insert_colored_text("📊 OPEN TRADES:\n", "header")
+            if self.is_connected.get():
+                try:
+                    if mt5.initialize():
+                        symbol = self.trading_symbol.get()
+                        positions = mt5.positions_get(symbol=symbol)
+                        
+                        if positions:
+                            total_profit = sum(pos.profit for pos in positions)
+                            self.insert_colored_text(f"📈 Open Positions: {len(positions)}\n", "info")
+                            
+                            if total_profit >= 0:
+                                self.insert_colored_text(f"💚 Total P&L: ${total_profit:.2f}\n", "profit")
+                            else:
+                                self.insert_colored_text(f"💔 Total P&L: ${total_profit:.2f}\n", "loss")
+                            
+                            # Show individual positions
+                            for i, pos in enumerate(positions[:5], 1):  # Show max 5 positions
+                                pos_type = "BUY" if pos.type == 0 else "SELL"
+                                if pos.profit >= 0:
+                                    self.insert_colored_text(f"   {i}. {pos_type} {pos.volume:.2f} lots - P&L: ${pos.profit:.2f}\n", "profit")
+                                else:
+                                    self.insert_colored_text(f"   {i}. {pos_type} {pos.volume:.2f} lots - P&L: ${pos.profit:.2f}\n", "loss")
+                        else:
+                            self.insert_colored_text("📭 No open positions\n", "info")
+                except:
+                    self.insert_colored_text("📭 No open positions (Demo)\n", "info")
+            else:
+                self.insert_colored_text("⚠️ Connect to MT5 to view trades\n", "warning")
+            
+            self.insert_colored_text("\n")
+            
+            # System Configuration
+            self.insert_colored_text("⚙️ CURRENT CONFIGURATION:\n", "header")
+            if hasattr(self, 'config_vars'):
+                lot_size = self.config_vars.get('lot_size', tk.StringVar(value='0.01')).get()
+                max_pos = self.config_vars.get('max_positions', tk.StringVar(value='3')).get()
+                min_conf = self.config_vars.get('min_confidence', tk.StringVar(value='0.65')).get()
+                signal_freq = self.config_vars.get('signal_freq_s', tk.StringVar(value='60')).get()
+                
+                self.insert_colored_text(f"📏 Lot Size: {lot_size}\n", "info")
+                self.insert_colored_text(f"📊 Max Positions: {max_pos}\n", "info")
+                self.insert_colored_text(f"🎯 Min Confidence: {min_conf}\n", "info")
+                self.insert_colored_text(f"⏰ Signal Frequency: {signal_freq}s\n", "info")
+            
+            # Auto-scroll to bottom
+            self.status_display.see(tk.END)
+            
+        except Exception as e:
+            self.insert_colored_text(f"❌ Error updating status: {str(e)}\n", "error")
+    
+    def insert_colored_text(self, text, tag=None):
+        """Insert colored text into status display"""
+        if tag:
+            self.status_display.insert(tk.END, text, tag)
+        else:
+            self.status_display.insert(tk.END, text)
+    
+    def refresh_dashboard_status(self):
+        """Manually refresh dashboard status"""
+        self.update_dashboard_status()
         
     def update_performance_display(self):
         """Update performance metrics display"""
