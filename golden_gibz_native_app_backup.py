@@ -356,11 +356,11 @@ class GoldenGibzNativeApp:
         log_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=(2, 5))
         
         # Fixed header section for latest signal analysis
-        header_frame = tk.Frame(log_frame, bg=self.colors['text_bg'], height=160)
+        header_frame = tk.Frame(log_frame, bg=self.colors['text_bg'], height=120)
         header_frame.pack(fill=tk.X, pady=(0, 5))
         header_frame.pack_propagate(False)
         
-        self.signal_header = self.create_colorful_text_widget(header_frame, height=9, width=70)
+        self.signal_header = self.create_colorful_text_widget(header_frame, height=7, width=70)
         self.signal_header.pack(fill=tk.BOTH, expand=True)
         
         # Initialize with placeholder text
@@ -1411,6 +1411,7 @@ class GoldenGibzNativeApp:
                             self.log_queue.put(('trading', f"🎯 Signal Generated: {action_name}"))
                             self.log_queue.put(('trading', f"⚖️ Confidence: {confidence:.3f}"))
                             self.log_queue.put(('trading', f"   Entry Price: ${current_price:.2f}"))
+                            self.log_queue.put(('trading', f"   Signal Data: action={action}, action_name={action_name}"))
                             
                             if confidence >= ea.min_confidence:
                                 # Check current positions before attempting trade
@@ -3400,6 +3401,30 @@ Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"""
         
         # Disable editing again
         self.signal_header.config(state=tk.DISABLED)
+        
+        # Profit/positive P&L
+        elif any(word in message for word in ['💚', '💰', '+$', 'profit']):
+            return "profit"
+        
+        # Loss/negative P&L
+        elif any(word in message for word in ['💔', '-$', 'loss']):
+            return "loss"
+        
+        # Signal messages
+        elif any(word in message_lower for word in ['🎯', 'signal', 'buy', 'sell', 'short', 'long']):
+            return "signal"
+        
+        # Trade messages
+        elif any(word in message_lower for word in ['trade', 'position', 'lot']):
+            return "trade"
+        
+        # Header messages
+        elif any(word in message for word in ['🚀', '📡', '💰', '📊', '⚙️', '=']):
+            return "header"
+        
+        # Default to info
+        else:
+            return "info"
             
     def log_message(self, message, level="INFO"):
         """Add message to logs - now logs to trading tab and model tab as appropriate"""

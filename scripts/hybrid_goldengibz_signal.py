@@ -68,6 +68,7 @@ class HybridGoldenGibzEA:
         self.winning_trades = 0
         self.losing_trades = 0
         self.last_reset_date = datetime.now().date()
+        self.last_error = None  # Track last error for better debugging
         
         # Indicator settings - ENHANCED TO MATCH BACKTEST
         self.indicators = self.config.get("indicators", {
@@ -1247,6 +1248,9 @@ class HybridGoldenGibzEA:
         action = signal['action']
         confidence = signal['confidence']
         
+        # Clear previous error
+        self.last_error = None
+        
         # Reset daily stats if new day
         self.reset_daily_stats()
         
@@ -1255,17 +1259,20 @@ class HybridGoldenGibzEA:
         
         # Check trading time
         if not self.is_trading_time():
-            print(f"⏰ Outside trading hours ({self.trading_hours['start']:02d}:00-{self.trading_hours['end']:02d}:00)")
+            self.last_error = f"⏰ Outside trading hours ({self.trading_hours['start']:02d}:00-{self.trading_hours['end']:02d}:00)"
+            print(self.last_error)
             return False
         
         # Check daily loss limit
         if self.daily_pnl <= -self.max_daily_loss:
-            print(f"🚫 Daily loss limit reached: ${self.daily_pnl:.2f} (Limit: -${self.max_daily_loss})")
+            self.last_error = f"🚫 Daily loss limit reached: ${self.daily_pnl:.2f} (Limit: -${self.max_daily_loss})"
+            print(self.last_error)
             return False
         
         # Check daily trade limit
         if self.daily_trades >= self.max_daily_trades:
-            print(f"🚫 Daily trade limit reached: {self.daily_trades}/{self.max_daily_trades}")
+            self.last_error = f"🚫 Daily trade limit reached: {self.daily_trades}/{self.max_daily_trades}"
+            print(self.last_error)
             return False
         
         # Check trade cooldown
@@ -1273,12 +1280,14 @@ class HybridGoldenGibzEA:
             time_since_trade = (datetime.now() - self.last_trade_time).total_seconds()
             if time_since_trade < self.trade_cooldown:
                 remaining = self.trade_cooldown - time_since_trade
-                print(f"⏳ Trade cooldown: {remaining:.0f}s remaining")
+                self.last_error = f"⏳ Trade cooldown: {remaining:.0f}s remaining"
+                print(self.last_error)
                 return False
         
         # Check confidence threshold
         if confidence < self.min_confidence:
-            print(f"⚠️ Signal confidence too low: {confidence:.2f} < {self.min_confidence}")
+            self.last_error = f"⚠️ Signal confidence too low: {confidence:.2f} < {self.min_confidence}"
+            print(self.last_error)
             return False
         
         # Check position limits - allow up to max_positions in SAME direction
@@ -1290,12 +1299,14 @@ class HybridGoldenGibzEA:
             
             # For LONG signals, check if we can add more LONG positions
             if action == 1 and long_count >= self.max_positions:
-                print(f"⚠️ Max LONG positions reached: {long_count}/{self.max_positions}")
+                self.last_error = f"⚠️ Max LONG positions reached: {long_count}/{self.max_positions}"
+                print(self.last_error)
                 return False
             
             # For SHORT signals, check if we can add more SHORT positions  
             if action == 2 and short_count >= self.max_positions:
-                print(f"⚠️ Max SHORT positions reached: {short_count}/{self.max_positions}")
+                self.last_error = f"⚠️ Max SHORT positions reached: {short_count}/{self.max_positions}"
+                print(self.last_error)
                 return False
         
         # Execute based on action
@@ -1370,7 +1381,8 @@ class HybridGoldenGibzEA:
             
             return True
         else:
-            print(f"❌ LONG trade failed: {result.retcode}")
+            self.last_error = f"❌ LONG trade failed: MT5 error {result.retcode}"
+            print(self.last_error)
             return False
     
     def execute_short_trade(self, signal):
@@ -1437,6 +1449,7 @@ class HybridGoldenGibzEA:
             return True
         else:
             print(f"❌ SHORT trade failed: {result.retcode}")
+            self.last_error = f"❌ SHORT trade failed: MT5 error {result.retcode}"
             return False
     
     def update_trade_statistics(self):

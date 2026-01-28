@@ -15,11 +15,6 @@
     "dashboard_refresh": 5,
     "show_indicators": true,
     "show_positions": true,
-    "broker_spread": 2.3,
-    "spread_multiplier": 0.01,
-    "pnl_multiplier": 100,
-    "stop_loss_pips": 30,
-    "take_profit_pips": 30,
     "indicators": {
         "ema_fast": 20,
         "ema_slow": 50,
@@ -32,6 +27,5 @@
         "adx_period": 14,
         "stoch_k": 14,
         "stoch_d": 3
-    },
-    "risk_reward_ratio": "1:1"
+    }
 }

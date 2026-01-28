@@ -37,6 +37,7 @@ class PureAIGoldenGibzEA:
         self.current_position = 0
         self.last_signal_time = None
         self.signal_cooldown = 300  # 5 minutes between signals
+        self.last_error = None  # Track last error for better debugging
         
         # Initialize AI model loader
         self.model_loader = GoldenGibzModelLoader()
@@ -190,13 +191,18 @@ class PureAIGoldenGibzEA:
     def execute_trade(self, signal, confidence, reason):
         """Execute trade based on AI signal"""
         try:
+            # Clear previous error
+            self.last_error = None
+            
             if not self.check_signal_cooldown():
+                self.last_error = f"⏳ Trade cooldown: Signal too recent"
                 return False
             
             # Get current price
             tick = mt5.symbol_info_tick(self.symbol)
             if not tick:
-                print("❌ Failed to get current price")
+                self.last_error = "❌ Failed to get current price"
+                print(self.last_error)
                 return False
             
             current_price = tick.bid if signal == -1 else tick.ask
@@ -204,7 +210,8 @@ class PureAIGoldenGibzEA:
             # Check position limits
             positions = mt5.positions_get(symbol=self.symbol)
             if positions and len(positions) >= self.max_positions:
-                print(f"⚠️ Maximum positions ({self.max_positions}) already open")
+                self.last_error = f"⚠️ Maximum positions ({self.max_positions}) already open"
+                print(self.last_error)
                 return False
             
             # Prepare trade request
@@ -240,7 +247,8 @@ class PureAIGoldenGibzEA:
             result = mt5.order_send(request)
             
             if result.retcode != mt5.TRADE_RETCODE_DONE:
-                print(f"❌ Trade failed: {result.comment}")
+                self.last_error = f"❌ Trade failed: MT5 error {result.retcode} - {result.comment}"
+                print(self.last_error)
                 return False
             
             self.last_signal_time = time.time()

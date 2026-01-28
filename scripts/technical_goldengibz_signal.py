@@ -66,6 +66,7 @@ class TechnicalGoldenGibzEA:
         self.winning_trades = 0
         self.losing_trades = 0
         self.last_reset_date = datetime.now().date()
+        self.last_error = None  # Track last error for better debugging
         
         # Enhanced indicator settings - TECHNICAL ONLY OPTIMIZED
         self.indicators = self.config.get("indicators", {
@@ -697,6 +698,9 @@ class TechnicalGoldenGibzEA:
         action = signal['action']
         confidence = signal['confidence']
         
+        # Clear previous error
+        self.last_error = None
+        
         # Reset daily stats if new day
         self.reset_daily_stats()
         
@@ -705,17 +709,20 @@ class TechnicalGoldenGibzEA:
         
         # Check trading time
         if not self.is_trading_time():
-            print(f"⏰ Outside trading hours ({self.trading_hours['start']:02d}:00-{self.trading_hours['end']:02d}:00)")
+            self.last_error = f"⏰ Outside trading hours ({self.trading_hours['start']:02d}:00-{self.trading_hours['end']:02d}:00)"
+            print(self.last_error)
             return False
         
         # Check daily loss limit
         if self.daily_pnl <= -self.max_daily_loss:
-            print(f"🚫 Daily loss limit reached: ${self.daily_pnl:.2f} (Limit: -${self.max_daily_loss})")
+            self.last_error = f"🚫 Daily loss limit reached: ${self.daily_pnl:.2f} (Limit: -${self.max_daily_loss})"
+            print(self.last_error)
             return False
         
         # Check daily trade limit
         if self.daily_trades >= self.max_daily_trades:
-            print(f"🚫 Daily trade limit reached: {self.daily_trades}/{self.max_daily_trades}")
+            self.last_error = f"🚫 Daily trade limit reached: {self.daily_trades}/{self.max_daily_trades}"
+            print(self.last_error)
             return False
         
         # Check trade cooldown
@@ -723,18 +730,21 @@ class TechnicalGoldenGibzEA:
             time_since_trade = (datetime.now() - self.last_trade_time).total_seconds()
             if time_since_trade < self.trade_cooldown:
                 remaining = self.trade_cooldown - time_since_trade
-                print(f"⏳ Trade cooldown: {remaining:.0f}s remaining")
+                self.last_error = f"⏳ Trade cooldown: {remaining:.0f}s remaining"
+                print(self.last_error)
                 return False
         
         # Check confidence threshold
         if confidence < self.min_confidence:
-            print(f"⚠️ Signal confidence too low: {confidence:.2f} < {self.min_confidence}")
+            self.last_error = f"⚠️ Signal confidence too low: {confidence:.2f} < {self.min_confidence}"
+            print(self.last_error)
             return False
         
         # Check position limits
         positions = mt5.positions_get(symbol=self.symbol)
         if positions and len(positions) >= self.max_positions:
-            print(f"⚠️ Max positions reached: {len(positions)}/{self.max_positions}")
+            self.last_error = f"⚠️ Max positions reached: {len(positions)}/{self.max_positions}"
+            print(self.last_error)
             return False
         
         # Execute based on action
@@ -804,7 +814,8 @@ class TechnicalGoldenGibzEA:
             
             return True
         else:
-            print(f"❌ LONG trade failed: {result.retcode}")
+            self.last_error = f"❌ LONG trade failed: MT5 error {result.retcode}"
+            print(self.last_error)
             return False
     
     def execute_short_trade(self, signal):
@@ -865,7 +876,8 @@ class TechnicalGoldenGibzEA:
             
             return True
         else:
-            print(f"❌ SHORT trade failed: {result.retcode}")
+            self.last_error = f"❌ SHORT trade failed: MT5 error {result.retcode}"
+            print(self.last_error)
             return False
     def update_trade_statistics(self):
         """Update trading statistics based on closed positions and open P&L."""
